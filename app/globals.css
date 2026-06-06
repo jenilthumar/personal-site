@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* ── Design tokens (from Figma: sage-green monochrome on near-black) ─────── */
+:root {
+  --surface: #0a0a0a; /* page background          */
+  --oxley-300: #aac3af; /* name, section + card titles, footer nav */
+  --on-surface: #96b49d; /* body copy, links, index  */
+  --oxley-700: #607765; /* dimmed: date range, secondary tags */
+}
+
+/* Expose tokens as Tailwind v4 utilities: bg-surface, text-oxley-300,
+   text-on-surface, text-oxley-700, font-sans. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-oxley-300: var(--oxley-300);
+  --color-on-surface: var(--on-surface);
+  --color-oxley-700: var(--oxley-700);
+
+  --font-sans: var(--font-authentic-sans);
+}
+
+/* Dark-only design — tell the UA to render form controls / scrollbars dark. */
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-authentic-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--oxley-300);
+  color: var(--surface);
+}
