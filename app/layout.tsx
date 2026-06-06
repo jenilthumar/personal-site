@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Sidebar } from "./components/Sidebar";
 
 /* ── Typeface ───────────────────────────────────────────────────────────────
  * AUTHENTIC Sans, self-hosted from app/fonts/ (converted otf → woff2).
@@ -43,15 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${authenticSans.variable} h-full`}>
-      <body className="min-h-screen">
-        {/* Fluid 24px gutters: exactly the Figma at 1440px (336 + 96 + 960),
-            then the main column grows to fill, capped at 1920px on very wide
-            screens so the layout never strands large side margins. */}
-        <div className="mx-auto flex min-h-screen max-w-[1920px] flex-col gap-12 px-6 py-6 lg:flex-row lg:gap-24">
-          <Sidebar />
-          <main className="min-w-0 flex-1 lg:pt-[52px]">{children}</main>
-        </div>
-      </body>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }

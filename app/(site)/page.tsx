@@ -1,5 +1,5 @@
 import { getAllWork } from "@/lib/content";
-import { WorkGrid } from "./components/WorkGrid";
+import { WorkGrid } from "@/app/components/WorkGrid";
 
 export default function Home() {
   const items = getAllWork();

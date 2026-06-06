@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getWorkByCategory, type WorkItem } from "@/lib/content";
+import { mediaUrl } from "@/lib/media";
 import { site } from "@/lib/site";
 
 function IndexSection({ title, items }: { title: string; items: WorkItem[] }) {
@@ -57,7 +58,7 @@ export function Sidebar() {
             >
               <span className="relative inline-block size-5 shrink-0 overflow-hidden rounded bg-on-surface">
                 <Image
-                  src={site.current.logo}
+                  src={mediaUrl(site.current.logo)}
                   alt={`${site.current.company} logo`}
                   fill
                   sizes="20px"

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { WorkItem } from "@/lib/content";
+import { mediaUrl } from "@/lib/media";
 import { Tags } from "./Tags";
 
 /**
@@ -20,7 +21,7 @@ export function WorkCard({
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-oxley-700/10">
         {item.cover ? (
           <Image
-            src={item.cover}
+            src={mediaUrl(item.cover)}
             alt={item.title}
             fill
             sizes="(min-width: 1024px) 40vw, (min-width: 640px) 48vw, 100vw"
