@@ -27,7 +27,9 @@ export function ProjectHero({ hero, title }: { hero?: string; title: string }) {
         </div>
       )}
 
-      <Wordmark className="absolute left-6 top-6 z-10 mix-blend-plus-lighter" />
+      {/* White text in mix-blend-difference → reads dark over light heroes and
+          light over dark ones, adapting to any image (the mariotestino.com trick). */}
+      <Wordmark className="absolute left-6 top-6 z-10 text-white mix-blend-difference" />
     </header>
   );
 }

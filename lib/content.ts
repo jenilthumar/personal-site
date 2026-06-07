@@ -11,9 +11,6 @@ import matter from "gray-matter";
 
 export type WorkCategory = "project" | "photography";
 
-/** A gallery row: a single full-bleed image (string) or a side-by-side set. */
-export type GalleryItem = string | string[];
-
 /** A photograph with its natural aspect (e.g. "3/2", "2/3", "1/1") + caption. */
 export type Photo = { src?: string; aspect?: string; caption?: string };
 /** A photography block: one photo (full width) or a row of photos. */
@@ -28,6 +25,8 @@ export type WorkItem = {
   date: string;
   cover?: string;
   summary?: string;
+  /** Whether the .mdx has body content (the project case study) below frontmatter. */
+  hasBody: boolean;
 
   // ── Project detail page ───────────────────────────────────────────────
   /** Full-bleed hero image. */
@@ -43,8 +42,6 @@ export type WorkItem = {
   company?: string;
   /** External live link (rendered as "Visit"). */
   url?: string;
-  /** Showcase below the summary: strings = full-bleed, arrays = a row. */
-  gallery?: GalleryItem[];
 
   // ── Photography page ──────────────────────────────────────────────────
   /** Curated photo flow: a Photo (full width) or a Photo[] (a justified row). */
@@ -61,7 +58,7 @@ export function getAllWork(): WorkItem[] {
   const items = files.map((file): WorkItem => {
     const slug = file.replace(/\.mdx$/, "");
     const raw = fs.readFileSync(path.join(CONTENT_DIR, file), "utf8");
-    const { data } = matter(raw);
+    const { data, content } = matter(raw);
 
     return {
       slug,
@@ -71,6 +68,7 @@ export function getAllWork(): WorkItem[] {
       date: data.date ? String(data.date) : "",
       cover: data.cover,
       summary: data.summary,
+      hasBody: content.trim().length > 0,
       hero: data.hero,
       description: data.description,
       sectors: data.sectors,
@@ -79,7 +77,6 @@ export function getAllWork(): WorkItem[] {
       client: data.client,
       company: data.company,
       url: data.url,
-      gallery: Array.isArray(data.gallery) ? data.gallery : undefined,
       photos: Array.isArray(data.photos) ? data.photos : undefined,
     };
   });

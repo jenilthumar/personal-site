@@ -6,7 +6,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={`inline-flex items-start font-medium text-oxley-300 ${className}`}
+      className={`inline-flex items-start font-medium ${className}`}
     >
       {site.name}
       {site.registered && (

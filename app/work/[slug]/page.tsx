@@ -36,9 +36,15 @@ export default async function WorkPage({
 
   const next = getNextWork(slug);
 
-  return item.category === "photography" ? (
-    <PhotographyView item={item} next={next} />
-  ) : (
-    <ProjectView item={item} next={next} />
-  );
+  if (item.category === "photography") {
+    return <PhotographyView item={item} next={next} />;
+  }
+
+  // The case-study body lives in the project's MDX (remark-frontmatter strips
+  // the YAML); rendered with project components in ProjectView.
+  const Post = item.hasBody
+    ? (await import(`@/content/${slug}.mdx`)).default
+    : null;
+
+  return <ProjectView item={item} next={next} Post={Post} />;
 }

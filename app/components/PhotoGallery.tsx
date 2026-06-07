@@ -72,7 +72,7 @@ export function PhotoGallery({
     <div className="flex flex-col gap-16 px-6">
       {photos.map((block, index) =>
         Array.isArray(block) ? (
-          <div key={index} className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div key={index} className="flex flex-col gap-6 sm:flex-row sm:items-start">
             {block.map((photo, i) => (
               <PhotoFigure
                 key={i}
