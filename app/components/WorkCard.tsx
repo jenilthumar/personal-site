@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { WorkItem } from "@/lib/content";
+import { workHref } from "@/lib/content";
 import { mediaUrl } from "@/lib/media";
 import { Tags } from "./Tags";
 
@@ -17,7 +18,7 @@ export function WorkCard({
   priority?: boolean;
 }) {
   return (
-    <Link href={`/work/${item.slug}`} className="group block">
+    <Link href={workHref(item)} className="group block">
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-oxley-700/10">
         {item.cover ? (
           <Image

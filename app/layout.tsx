@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     template: "%s — Jenil HT",
   },
   description:
-    "A product/visual designer who cares deeply about creating functional and visually clean, strong digital experiences & products — how they look, feel & behave.",
+    "Jenil HT is a product and visual designer in Surat who cares about how things look, feel, and behave, and keeps them clean and functional more than loud.",
   authors: [{ name: "Jenil HT" }],
   openGraph: {
     type: "website",
     title: "Jenil HT — Product & Visual Designer",
     description:
-      "A product/visual designer crafting functional, visually clean digital experiences & products.",
+      "A product and visual designer in Surat who cares about how things look, feel, and behave.",
   },
 };
 

@@ -11,10 +11,34 @@ import matter from "gray-matter";
 
 export type WorkCategory = "project" | "photography";
 
-/** A photograph with its natural aspect (e.g. "3/2", "2/3", "1/1") + caption. */
-export type Photo = { src?: string; aspect?: string; caption?: string };
-/** A photography block: one photo (full width) or a row of photos. */
-export type PhotoBlock = Photo | Photo[];
+/**
+ * A photograph with its natural aspect (e.g. "3/2", "2/3", "1/1") + caption.
+ * `feature` lifts it out of the contact-sheet grid: shown large and centered,
+ * with its caption, as a chapter anchor.
+ */
+export type Photo = {
+  src?: string;
+  aspect?: string;
+  caption?: string;
+  feature?: boolean;
+};
+/** A prose beat dropped into the photo flow, to tell the story between images. */
+export type TextBlock = { text: string; eyebrow?: string };
+/** An item in a photo flow: one photo, a row of photos, or a text beat. */
+export type PhotoBlock = Photo | Photo[] | TextBlock;
+
+/** True when a flow item is a prose beat rather than a photo (or row). */
+export function isTextBlock(block: PhotoBlock): block is TextBlock {
+  return !Array.isArray(block) && "text" in block;
+}
+
+/** Count of photographs in a flow, ignoring text beats. */
+export function countPhotos(blocks: PhotoBlock[] = []): number {
+  return blocks.reduce(
+    (n, b) => n + (Array.isArray(b) ? b.length : isTextBlock(b) ? 0 : 1),
+    0,
+  );
+}
 
 export type WorkItem = {
   slug: string;
@@ -91,6 +115,13 @@ export function getWorkByCategory(category: WorkCategory): WorkItem[] {
 
 export function getWorkBySlug(slug: string): WorkItem | undefined {
   return getAllWork().find((item) => item.slug === slug);
+}
+
+/** Detail-page path for a work item. Photography lives under /photography. */
+export function workHref(item: Pick<WorkItem, "slug" | "category">): string {
+  return item.category === "photography"
+    ? `/photography/${item.slug}`
+    : `/work/${item.slug}`;
 }
 
 /** The next entry in display order, wrapping around. Undefined if it's the only one. */

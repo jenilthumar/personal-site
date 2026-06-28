@@ -37,3 +37,13 @@ body {
   background-color: var(--oxley-300);
   color: var(--surface);
 }
+
+/* Lightbox entrance. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

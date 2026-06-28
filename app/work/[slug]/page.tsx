@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getAllWork, getWorkBySlug, getNextWork } from "@/lib/content";
 import { ProjectView } from "@/app/components/ProjectView";
-import { PhotographyView } from "@/app/components/PhotographyView";
 
 // Only slugs from generateStaticParams resolve — fully prerendered, unknown 404s.
 export const dynamicParams = false;
@@ -34,11 +33,10 @@ export default async function WorkPage({
   const item = getWorkBySlug(slug);
   if (!item) notFound();
 
-  const next = getNextWork(slug);
+  // Photography moved to /photography/<slug>; keep old links working.
+  if (item.category === "photography") redirect(`/photography/${slug}`);
 
-  if (item.category === "photography") {
-    return <PhotographyView item={item} next={next} />;
-  }
+  const next = getNextWork(slug);
 
   // The case-study body lives in the project's MDX (remark-frontmatter strips
   // the YAML); rendered with project components in ProjectView.

@@ -11,7 +11,10 @@ function buildDetails(item: WorkItem): { label: string; value: ReactNode }[] {
   if (services) details.push({ label: "Services", value: services });
 
   if (item.url) {
-    const host = item.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    const host = item.url
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "")
+      .replace(/\/$/, "");
     details.push({
       label: "Visit",
       value: (
@@ -49,13 +52,13 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
       </div>
 
       {details.length > 0 && (
-        <dl className="flex flex-wrap gap-x-12 gap-y-5 lg:w-[389px] lg:shrink-0">
+        <dl className="grid grid-cols-2 gap-x-12 gap-y-5 lg:w-[416px] lg:shrink-0">
           {details.map((detail) => (
-            <div key={detail.label} className="flex shrink-0 flex-col gap-2">
+            <div key={detail.label} className="flex min-w-0 flex-col gap-2">
               <dt className="text-base leading-[1.3] text-oxley-700">
                 {detail.label}
               </dt>
-              <dd className="whitespace-nowrap text-base leading-[1.3] text-on-surface">
+              <dd className="text-base leading-[1.3] break-words text-on-surface">
                 {detail.value}
               </dd>
             </div>

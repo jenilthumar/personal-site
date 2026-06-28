@@ -13,7 +13,7 @@ export const site = {
   name: "Jenil HT",
   registered: true,
 
-  bio: "A product/visual designer. I care deeply about creating functional and visually clean and strong digital experiences & products, how it looks, feels & behaves.",
+  bio: "A product and visual designer in Surat. I care about how things look, feel, and behave, and I keep them clean and functional more than loud.",
 
   /** "Currently designing at …" row. */
   current: {
@@ -29,6 +29,7 @@ export const site = {
   /** Bottom-pinned footer navigation. */
   footerNav: [
     { label: "About", href: "/about" },
+    { label: "Running", href: "/running" },
     { label: "Explorations", href: "/explorations" },
     { label: "Contact", href: "/contact" },
   ] satisfies NavLink[],
