@@ -1,16 +1,28 @@
 import Image from "next/image";
 import { mediaUrl } from "@/lib/media";
 import { Wordmark } from "./Wordmark";
+import { HeroVideo } from "./HeroVideo";
 
 /**
  * Full-bleed 16:9 hero with the "Jenil HT®" mark overlaid top-left
- * (mix-blend-plus-lighter so it stays legible over any image). Until a real
- * hero image is provided, it falls back to a titled placeholder.
+ * (mix-blend-plus-lighter so it stays legible over any image). A looping
+ * `heroVideo` takes over the frame when present (with `hero` as its poster);
+ * otherwise the still hero image, falling back to a titled placeholder.
  */
-export function ProjectHero({ hero, title }: { hero?: string; title: string }) {
+export function ProjectHero({
+  hero,
+  heroVideo,
+  title,
+}: {
+  hero?: string;
+  heroVideo?: string;
+  title: string;
+}) {
   return (
     <header className="relative aspect-[16/9] w-full overflow-hidden bg-oxley-700/10">
-      {hero ? (
+      {heroVideo ? (
+        <HeroVideo src={heroVideo} poster={hero} alt={title} />
+      ) : hero ? (
         <Image
           src={mediaUrl(hero)}
           alt={title}

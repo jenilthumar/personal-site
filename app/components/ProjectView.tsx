@@ -23,7 +23,11 @@ export function ProjectView({
 }) {
   return (
     <div className="mx-auto flex max-w-[1920px] flex-col gap-24">
-      <ProjectHero hero={item.hero} title={item.title} />
+      <ProjectHero
+        hero={item.hero}
+        heroVideo={item.heroVideo}
+        title={item.title}
+      />
 
       <div className="px-6">
         <ProjectSummary item={item} />
