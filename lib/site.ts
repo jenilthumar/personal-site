@@ -30,7 +30,6 @@ export const site = {
   footerNav: [
     { label: "About", href: "/about" },
     { label: "Running", href: "/running" },
-    { label: "Explorations", href: "/explorations" },
     { label: "Contact", href: "/contact" },
   ] satisfies NavLink[],
 

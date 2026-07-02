@@ -55,6 +55,8 @@ export type WorkItem = {
   // ── Project detail page ───────────────────────────────────────────────
   /** Full-bleed hero image. */
   hero?: string;
+  /** Optional looping video hero (muted, autoplay); uses `hero` as its poster. */
+  heroVideo?: string;
   /** Longer intro shown on the detail page (falls back to `summary`). */
   description?: string;
   sectors?: string;
@@ -94,6 +96,7 @@ export function getAllWork(): WorkItem[] {
       summary: data.summary,
       hasBody: content.trim().length > 0,
       hero: data.hero,
+      heroVideo: data.heroVideo,
       description: data.description,
       sectors: data.sectors,
       services: data.services,

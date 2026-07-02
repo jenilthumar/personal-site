@@ -3,6 +3,7 @@ import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
 import { mediaUrl } from "@/lib/media";
+import { CaseVideo } from "./CaseVideo";
 
 /**
  * Components for a project case-study body. Text blocks (markdown headings +
@@ -102,6 +103,7 @@ function Row({ children }: { children?: ReactNode }) {
 
 export const projectMdxComponents: MDXComponents = {
   Full,
+  Video: CaseVideo,
   Row,
   Img,
   h2: (props: ComponentPropsWithoutRef<"h2">) => (

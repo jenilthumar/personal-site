@@ -6,30 +6,7 @@ function buildDetails(item: WorkItem): { label: string; value: ReactNode }[] {
   const details: { label: string; value: ReactNode }[] = [];
 
   if (item.sectors) details.push({ label: "Sectors", value: item.sectors });
-
-  const services = item.services ?? (item.tags.length ? item.tags.join(", ") : undefined);
-  if (services) details.push({ label: "Services", value: services });
-
-  if (item.url) {
-    const host = item.url
-      .replace(/^https?:\/\//, "")
-      .replace(/^www\./, "")
-      .replace(/\/$/, "");
-    details.push({
-      label: "Visit",
-      value: (
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline decoration-oxley-700/50 underline-offset-2 transition-colors hover:text-oxley-300"
-        >
-          {host}
-        </a>
-      ),
-    });
-  }
-
+  if (item.services) details.push({ label: "Services", value: item.services });
   if (item.timeline) details.push({ label: "Timeline", value: item.timeline });
 
   const client = item.client ?? item.company;
@@ -48,6 +25,30 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
         <h1 className="text-[32px] leading-[1.3] text-on-surface">{item.title}</h1>
         {description && (
           <p className="text-base leading-[1.3] text-on-surface">{description}</p>
+        )}
+        {item.url && (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/visit mt-1 inline-flex w-fit items-center gap-1.5 text-base leading-[1.3] font-medium text-oxley-300 underline decoration-oxley-700 underline-offset-4 transition-colors hover:decoration-oxley-300"
+          >
+            Visit live
+            <svg
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden="true"
+              className="size-3 transition-transform duration-200 group-hover/visit:translate-x-0.5 group-hover/visit:-translate-y-0.5"
+            >
+              <path
+                d="M3.5 8.5L8.5 3.5M4.5 3.5H8.5V7.5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
         )}
       </div>
 

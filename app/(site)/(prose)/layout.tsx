@@ -1,7 +1,7 @@
 /**
- * Shared shell for the standalone MDX pages (About / Explorations / Contact).
+ * Shared shell for the standalone MDX pages (About / Contact).
  * Constrains content to a comfortable reading measure; the route group `(prose)`
- * keeps these URLs at the root (/about, /explorations, /contact).
+ * keeps these URLs at the root (/about, /contact).
  */
 export default function ProseLayout({
   children,
