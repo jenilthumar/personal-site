@@ -1,7 +1,7 @@
 import { Sidebar } from "@/app/components/Sidebar";
 
 /**
- * Shell for the sidebar-bearing pages (home + About/Explorations/Contact).
+ * Shell for the sidebar-bearing pages (home + About/Contact).
  * Fluid 24px gutters: exactly the Figma at 1440px (336 + 96 + 960), then the
  * main column grows to fill, capped at 1920px on very wide screens. The
  * full-bleed project pages live outside this group and skip the sidebar.
