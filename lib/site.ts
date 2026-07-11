@@ -19,7 +19,7 @@ export const site = {
   current: {
     label: "Currently designing at",
     company: "Roboto Studio",
-    logo: "/roboto-studio.png",
+    logo: "/roboto-studio.webp",
     url: "https://www.robotostudio.com",
   },
 

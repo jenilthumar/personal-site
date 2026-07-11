@@ -38,7 +38,7 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
               viewBox="0 0 12 12"
               fill="none"
               aria-hidden="true"
-              className="size-3 transition-transform duration-200 group-hover/visit:translate-x-0.5 group-hover/visit:-translate-y-0.5"
+              className="size-3 transition-transform duration-200 ease-out-quart group-hover/visit:translate-x-0.5 group-hover/visit:-translate-y-0.5"
             >
               <path
                 d="M3.5 8.5L8.5 3.5M4.5 3.5H8.5V7.5"

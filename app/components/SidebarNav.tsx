@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { mediaUrl } from "@/lib/media";
+import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
 import { site } from "@/lib/site";
 
 export type SidebarItem = { slug: string; title: string; href: string };
@@ -86,13 +86,13 @@ export function SidebarNav({
           <label
             htmlFor="site-menu"
             aria-hidden="true"
-            className="grid size-7 shrink-0 cursor-pointer place-items-center text-oxley-700 transition-colors hover:text-oxley-300 peer-focus-visible:text-oxley-300 lg:hidden"
+            className="grid size-7 shrink-0 cursor-pointer place-items-center text-oxley-700 transition-[color,scale] duration-150 ease-out-quart hover:text-oxley-300 peer-focus-visible:text-oxley-300 active:scale-90 active:duration-0 lg:hidden"
           >
             <span className="grid size-5 place-items-center border border-current">
               <svg
                 viewBox="0 0 12 12"
                 fill="none"
-                className="size-2.5 transition-transform duration-200"
+                className="size-2.5 transition-transform duration-200 ease-out-quart"
               >
                 <path
                   d="M6 1.5v9M1.5 6h9"
@@ -106,58 +106,67 @@ export function SidebarNav({
         )}
       </div>
 
-      {/* Panel — always shown when expanded; collapsible otherwise */}
+      {/* Panel — always open when expanded and on desktop. The mobile menu
+          eases open by growing its grid row 0fr → 1fr with a fade; reduced
+          motion keeps only the fade. */}
       <div
-        className={`flex-col gap-12 pt-8 lg:flex lg:grow lg:justify-between lg:gap-0 ${
-          expanded ? "flex" : "hidden peer-checked:flex"
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out-quart motion-reduce:transition-[opacity] lg:grow lg:grid-rows-[1fr] lg:opacity-100 ${
+          expanded
+            ? "grid-rows-[1fr]"
+            : "grid-rows-[0fr] opacity-0 peer-checked:grid-rows-[1fr] peer-checked:opacity-100"
         }`}
       >
-        <div className="flex flex-col gap-8">
-          {/* Bio — identity, so it sits out of the mobile menu */}
-          <p className={`text-on-surface ${dimOnMobile}`}>{site.bio}</p>
+        <div className="overflow-hidden">
+          <div className="flex flex-col gap-12 pt-8 lg:h-full lg:justify-between lg:gap-0">
+            <div className="flex flex-col gap-8">
+              {/* Bio — identity, so it sits out of the mobile menu */}
+              <p className={`text-on-surface ${dimOnMobile}`}>{site.bio}</p>
 
-          {/* Currently designing at … */}
-          <div className={`flex flex-col gap-1 ${dimOnMobile}`}>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-on-surface">
-              <span>{site.current.label}</span>
-              <a
-                href={site.current.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 transition-colors hover:text-oxley-300"
-              >
-                <span className="relative inline-block size-5 shrink-0 overflow-hidden bg-on-surface">
-                  <Image
-                    src={mediaUrl(site.current.logo)}
-                    alt={`${site.current.company} logo`}
-                    fill
-                    sizes="20px"
-                    className="object-cover [mix-blend-mode:plus-lighter]"
-                  />
-                </span>
-                <span>{site.current.company}</span>
-              </a>
+              {/* Currently designing at … */}
+              <div className={`flex flex-col gap-1 ${dimOnMobile}`}>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-on-surface">
+                  <span>{site.current.label}</span>
+                  <a
+                    href={site.current.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 transition-colors hover:text-oxley-300"
+                  >
+                    <span className="relative inline-block size-5 shrink-0 overflow-hidden bg-on-surface">
+                      <Image
+                        src={mediaUrl(site.current.logo)}
+                        alt={`${site.current.company} logo`}
+                        fill
+                        sizes="20px"
+                        quality={IMAGE_QUALITY}
+                        className="object-cover [mix-blend-mode:plus-lighter]"
+                      />
+                    </span>
+                    <span>{site.current.company}</span>
+                  </a>
+                </div>
+                <p className="text-oxley-700">{site.dateRange}</p>
+              </div>
+
+              {/* Index of work */}
+              <IndexSection title="Projects" items={projects} />
+              <IndexSection title="Photography" items={photography} />
             </div>
-            <p className="text-oxley-700">{site.dateRange}</p>
+
+            {/* Footer navigation */}
+            <nav className="flex flex-col gap-2 font-medium tracking-[-0.01em] text-oxley-300">
+              {site.footerNav.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="w-fit transition-opacity hover:opacity-70"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
           </div>
-
-          {/* Index of work */}
-          <IndexSection title="Projects" items={projects} />
-          <IndexSection title="Photography" items={photography} />
         </div>
-
-        {/* Footer navigation */}
-        <nav className="flex flex-col gap-2 font-medium tracking-[-0.01em] text-oxley-300">
-          {site.footerNav.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="w-fit transition-opacity hover:opacity-70"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
       </div>
     </aside>
   );

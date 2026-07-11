@@ -21,3 +21,12 @@ export function mediaUrl(path: string): string {
   const clean = path.replace(/^\/+/, "");
   return `${MEDIA_BASE}/${clean}`;
 }
+
+/**
+ * next/image quality floor for the whole site — above Next's default of 75.
+ * Photography, where the image is the point, gets the full 100. Both values
+ * must be listed in `images.qualities` in next.config.ts, or the optimizer
+ * rejects them.
+ */
+export const IMAGE_QUALITY = 90;
+export const PHOTO_QUALITY = 100;

@@ -66,10 +66,13 @@ export type WorkItem = {
   /** Falls back to `company`. */
   client?: string;
   company?: string;
-  /** External live link (rendered as "Visit"). */
+  /** External link. Projects render it as "Visit"; photography treats a YouTube
+   * link as the item's film (shown by FilmSpotlight). */
   url?: string;
 
   // ── Photography page ──────────────────────────────────────────────────
+  /** One-line note shown under the film, when `url` is a YouTube link. */
+  filmNote?: string;
   /** Curated photo flow: a Photo (full width) or a Photo[] (a justified row). */
   photos?: PhotoBlock[];
 };
@@ -104,6 +107,7 @@ export function getAllWork(): WorkItem[] {
       client: data.client,
       company: data.company,
       url: data.url,
+      filmNote: data.filmNote,
       photos: Array.isArray(data.photos) ? data.photos : undefined,
     };
   });
@@ -125,6 +129,118 @@ export function workHref(item: Pick<WorkItem, "slug" | "category">): string {
   return item.category === "photography"
     ? `/photography/${item.slug}`
     : `/work/${item.slug}`;
+}
+
+// ── Home feed ────────────────────────────────────────────────────────────
+// The vertical-scroll home view: every project's media, in display order.
+
+export type FeedImage = { src: string; alt: string; aspect: string };
+
+/** One block in the feed: a full-width image or video, or a side-by-side row. */
+export type FeedMedia =
+  | ({ kind: "image" } & FeedImage)
+  | ({ kind: "video"; poster?: string } & FeedImage)
+  | { kind: "row"; images: FeedImage[] };
+
+export type FeedProject = {
+  slug: string;
+  title: string;
+  tags: string[];
+  href: string;
+  media: FeedMedia[];
+};
+
+/** `key="value"` attribute pairs of a JSX-ish tag string. */
+function tagAttrs(tag: string): Record<string, string> {
+  const attrs: Record<string, string> = {};
+  for (const [, key, value] of tag.matchAll(/(\w+)="([^"]*)"/g)) {
+    attrs[key] = value;
+  }
+  return attrs;
+}
+
+/**
+ * Media blocks of a case-study body, in authored order. Bodies use a fixed
+ * set of media tags (<Video>, <Full>, <Row> of <Img>), so a light scan
+ * recovers them without compiling the MDX.
+ */
+function parseBodyMedia(body: string): FeedMedia[] {
+  const media: FeedMedia[] = [];
+  const blocks = body.matchAll(
+    /<(?:Full|Video)\b[^>]*\/>|<Row\b[\s\S]*?<\/Row>/g,
+  );
+
+  for (const [block] of blocks) {
+    if (block.startsWith("<Row")) {
+      const images = [...block.matchAll(/<Img\b[^>]*\/>/g)].flatMap(([img]) => {
+        const attrs = tagAttrs(img);
+        return attrs.src
+          ? [{ src: attrs.src, alt: attrs.alt ?? "", aspect: attrs.aspect ?? "3/2" }]
+          : [];
+      });
+      if (images.length) media.push({ kind: "row", images });
+    } else {
+      const attrs = tagAttrs(block);
+      if (!attrs.src) continue;
+      const base = {
+        src: attrs.src,
+        alt: attrs.alt ?? "",
+        aspect: attrs.aspect ?? "16/9",
+      };
+      media.push(
+        block.startsWith("<Video")
+          ? { kind: "video", poster: attrs.poster, ...base }
+          : { kind: "image", ...base },
+      );
+    }
+  }
+
+  return media;
+}
+
+/**
+ * Projects for the home feed, newest first: each leads with its hero (the
+ * loop video when there is one), then the case-study media as authored.
+ * Photography stays out; a project with no media at all is skipped.
+ */
+export function getWorkFeed(): FeedProject[] {
+  return getWorkByCategory("project")
+    .map((item): FeedProject => {
+      const raw = fs.readFileSync(
+        path.join(CONTENT_DIR, `${item.slug}.mdx`),
+        "utf8",
+      );
+      const { content } = matter(raw);
+
+      const media: FeedMedia[] = [];
+      const heroImage = item.hero ?? item.cover;
+      if (item.heroVideo) {
+        media.push({
+          kind: "video",
+          src: item.heroVideo,
+          poster: heroImage,
+          alt: item.title,
+          aspect: "16/9",
+        });
+      } else if (heroImage) {
+        media.push({ kind: "image", src: heroImage, alt: item.title, aspect: "16/9" });
+      }
+
+      for (const block of parseBodyMedia(content)) {
+        // The hero often doubles as a body image — don't show it twice.
+        if (block.kind === "image" && block.src === heroImage) continue;
+        media.push(block);
+      }
+
+      return {
+        slug: item.slug,
+        title: item.title,
+        tags: item.tags,
+        href: workHref(item),
+        media,
+      };
+    })
+    .filter((project) => project.media.length > 0);
 }
 
 /** The next entry in display order, wrapping around. Undefined if it's the only one. */

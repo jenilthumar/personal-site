@@ -5,6 +5,8 @@ import createMDX from "@next/mdx";
 // domain, plus a custom domain when NEXT_PUBLIC_MEDIA_BASE_URL is one.
 const remotePatterns = [
   { protocol: "https" as const, hostname: "*.public.blob.vercel-storage.com" },
+  // YouTube thumbnails, used as the poster for a photography item's film.
+  { protocol: "https" as const, hostname: "i.ytimg.com" },
 ];
 const mediaBase = process.env.NEXT_PUBLIC_MEDIA_BASE_URL;
 if (mediaBase) {
@@ -21,7 +23,9 @@ if (mediaBase) {
 const nextConfig: NextConfig = {
   // Let .md / .mdx files act as pages and be imported as components.
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
-  images: { remotePatterns },
+  // 90 is the site-wide floor, 100 for photography (see lib/media.ts). The
+  // optimizer 400s on any quality not listed here.
+  images: { remotePatterns, qualities: [90, 100] },
 };
 
 const withMDX = createMDX({

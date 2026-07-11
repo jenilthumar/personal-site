@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { WorkItem } from "@/lib/content";
 import { workHref } from "@/lib/content";
-import { mediaUrl } from "@/lib/media";
+import { IMAGE_QUALITY, mediaUrl, PHOTO_QUALITY } from "@/lib/media";
 import { Tags } from "./Tags";
 
 /**
@@ -18,7 +18,10 @@ export function WorkCard({
   priority?: boolean;
 }) {
   return (
-    <Link href={workHref(item)} className="group block">
+    <Link
+      href={workHref(item)}
+      className="group block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
+    >
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-oxley-700/10">
         {item.cover ? (
           <Image
@@ -26,8 +29,9 @@ export function WorkCard({
             alt={item.title}
             fill
             sizes="(min-width: 1024px) 40vw, (min-width: 640px) 48vw, 100vw"
+            quality={item.category === "photography" ? PHOTO_QUALITY : IMAGE_QUALITY}
             priority={priority}
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+            className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out-quart motion-safe:group-hover:scale-[1.02]"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-oxley-700/25 via-oxley-700/10 to-transparent">

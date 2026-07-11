@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { mediaUrl } from "@/lib/media";
+import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
 import { site } from "@/lib/site";
 
 export const metadata = {
@@ -37,6 +37,7 @@ function Thumb({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         fill
         sizes="40px"
+        quality={IMAGE_QUALITY}
         className="object-cover"
       />
     </span>
@@ -52,6 +53,7 @@ function Mark() {
         alt="Roboto Studio"
         fill
         sizes="24px"
+        quality={IMAGE_QUALITY}
         className="object-cover [mix-blend-mode:plus-lighter]"
       />
     </span>
@@ -88,7 +90,7 @@ export default function AboutPage() {
             <svg
               viewBox="0 0 12 12"
               fill="none"
-              className="size-[10px] transition-transform duration-200 group-open:rotate-45"
+              className="size-[10px] transition-transform duration-200 ease-out-quart group-open:rotate-45"
             >
               <path
                 d="M6 1.5v9M1.5 6h9"
@@ -101,7 +103,7 @@ export default function AboutPage() {
           <span className="group-open:hidden">How I got here</span>
           <span className="hidden group-open:inline">Hide</span>
         </summary>
-        <div className="mt-5 space-y-5 text-base leading-[1.8] text-on-surface">
+        <div className="mt-5 animate-rise-in space-y-5 text-base leading-[1.8] text-on-surface">
           <p>
             {`I grew up in Surat, with family roots in Amreli, a small town in Saurashtra where my father and grandfather were born, and so was I.`}
           </p>
