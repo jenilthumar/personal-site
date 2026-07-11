@@ -139,7 +139,7 @@ export function SidebarNav({
                         fill
                         sizes="20px"
                         quality={IMAGE_QUALITY}
-                        className="object-cover [mix-blend-mode:plus-lighter]"
+                        className="object-contain grayscale"
                       />
                     </span>
                     <span>{site.current.company}</span>

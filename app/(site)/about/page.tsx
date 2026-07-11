@@ -54,7 +54,7 @@ function Mark() {
         fill
         sizes="24px"
         quality={IMAGE_QUALITY}
-        className="object-cover [mix-blend-mode:plus-lighter]"
+        className="object-contain grayscale"
       />
     </span>
   );
