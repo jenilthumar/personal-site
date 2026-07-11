@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { mediaUrl } from "@/lib/media";
+import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
 import { Wordmark } from "./Wordmark";
 import { HeroVideo } from "./HeroVideo";
 
@@ -29,6 +29,7 @@ export function ProjectHero({
           fill
           priority
           sizes="(min-width: 1920px) 1920px, 100vw"
+          quality={IMAGE_QUALITY}
           className="object-cover"
         />
       ) : (

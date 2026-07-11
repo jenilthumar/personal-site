@@ -2,7 +2,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
-import { mediaUrl } from "@/lib/media";
+import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
 import { CaseVideo } from "./CaseVideo";
 
 /**
@@ -44,6 +44,7 @@ function Full({
           alt={alt}
           fill
           sizes="(min-width: 1920px) 1920px, 100vw"
+          quality={IMAGE_QUALITY}
           className="object-cover"
         />
       ) : (
@@ -77,6 +78,7 @@ function Img({
             alt={alt || caption || ""}
             fill
             sizes="(min-width: 640px) 50vw, 100vw"
+            quality={IMAGE_QUALITY}
             className="object-cover"
           />
         ) : (

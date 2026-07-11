@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type AnimationEvent } from "react";
 import Image from "next/image";
-import { mediaUrl } from "@/lib/media";
+import { mediaUrl, PHOTO_QUALITY } from "@/lib/media";
 import type { Photo, PhotoBlock, TextBlock } from "@/lib/content";
 
 /** "3/2" → 1.5. Drives the contained box and the longest-side normalization. */
@@ -28,7 +28,10 @@ type Segment =
  * index. Text beats and feature frames both break the contact-sheet grid into
  * sections; `flat` is the photo-only sequence the lightbox steps through.
  */
-function buildSegments(blocks: PhotoBlock[]): { segments: Segment[]; flat: Photo[] } {
+function buildSegments(blocks: PhotoBlock[]): {
+  segments: Segment[];
+  flat: Photo[];
+} {
   const segments: Segment[] = [];
   const flat: Photo[] = [];
   let run: Cell[] = [];
@@ -48,7 +51,10 @@ function buildSegments(blocks: PhotoBlock[]): { segments: Segment[]; flat: Photo
       segments.push({ type: "text", block });
     } else if (block.feature) {
       flush();
-      segments.push({ type: "feature", cell: { photo: block, index: flat.length } });
+      segments.push({
+        type: "feature",
+        cell: { photo: block, index: flat.length },
+      });
       flat.push(block);
     } else push(block);
   }
@@ -83,7 +89,7 @@ function PhotoCell({
         type="button"
         onClick={() => onOpen(index)}
         aria-label={photo.caption ?? `${title}, photo ${index + 1}`}
-        className="relative block cursor-pointer overflow-hidden bg-oxley-700/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300"
+        className="relative block cursor-pointer overflow-hidden bg-oxley-700/10 transition-opacity duration-200 ease-out-quart focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300 active:opacity-80 active:duration-0"
         style={{ width: widthPct, aspectRatio: cssRatio(photo.aspect) }}
       >
         {photo.src ? (
@@ -92,6 +98,7 @@ function PhotoCell({
             alt={photo.caption ?? title}
             fill
             sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+            quality={PHOTO_QUALITY}
             className="object-cover"
           />
         ) : (
@@ -134,7 +141,7 @@ function FeaturePhoto({
         type="button"
         onClick={() => onOpen(index)}
         aria-label={photo.caption ?? `${title}, photo ${index + 1}`}
-        className="max-w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300"
+        className="max-w-full cursor-pointer transition-opacity duration-200 ease-out-quart focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300 active:opacity-80 active:duration-0"
       >
         {photo.src ? (
           <Image
@@ -143,6 +150,7 @@ function FeaturePhoto({
             width={1600}
             height={Math.round(1600 / ratioValue(photo.aspect))}
             sizes="(min-width: 1024px) 70vw, 100vw"
+            quality={PHOTO_QUALITY}
             className="h-auto max-h-[70vh] w-auto max-w-full object-contain"
           />
         ) : (
@@ -179,9 +187,16 @@ export function PhotoGallery({
 }) {
   const { segments, flat } = buildSegments(photos ?? []);
   const [active, setActive] = useState<number | null>(null);
+  const [closing, setClosing] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const close = () => setActive(null);
+  // Closing mirrors the entrance fade; the dialog unmounts once it finishes.
+  const close = () => setClosing(true);
+  const finishClose = (e: AnimationEvent<HTMLDivElement>) => {
+    if (e.animationName !== "fade-out") return;
+    setActive(null);
+    setClosing(false);
+  };
   const go = (dir: number) =>
     setActive((cur) =>
       cur === null ? cur : (cur + dir + flat.length) % flat.length,
@@ -195,7 +210,7 @@ export function PhotoGallery({
         cur === null ? cur : (cur + dir + flat.length) % flat.length,
       );
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setActive(null);
+      if (e.key === "Escape") setClosing(true);
       else if (e.key === "ArrowLeft") step(-1);
       else if (e.key === "ArrowRight") step(1);
     };
@@ -253,13 +268,16 @@ export function PhotoGallery({
           aria-label={`${title}, photo ${active + 1} of ${flat.length}`}
           tabIndex={-1}
           onClick={close}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-surface/95 p-6 backdrop-blur-sm outline-none [animation:fade-in_150ms_ease-out]"
+          onAnimationEnd={finishClose}
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-surface/95 p-6 backdrop-blur-sm outline-none ${
+            closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
+          }`}
         >
           <button
             type="button"
             onClick={close}
             aria-label="Close"
-            className="absolute top-4 right-4 p-2 text-oxley-300 transition-colors hover:text-on-surface"
+            className="absolute top-4 right-4 p-2 text-oxley-300 transition-[color,scale] duration-150 ease-out-quart hover:text-on-surface active:scale-90 active:duration-0"
           >
             <svg
               viewBox="0 0 24 24"
@@ -282,7 +300,7 @@ export function PhotoGallery({
                   go(-1);
                 }}
                 aria-label="Previous photo"
-                className="absolute top-1/2 left-2 -translate-y-1/2 p-2 text-oxley-300 transition-colors hover:text-on-surface sm:left-4"
+                className="absolute top-1/2 left-2 -translate-y-1/2 p-2 text-oxley-300 transition-[color,scale] duration-150 ease-out-quart hover:text-on-surface active:scale-90 active:duration-0 sm:left-4"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -302,7 +320,7 @@ export function PhotoGallery({
                   go(1);
                 }}
                 aria-label="Next photo"
-                className="absolute top-1/2 right-2 -translate-y-1/2 p-2 text-oxley-300 transition-colors hover:text-on-surface sm:right-4"
+                className="absolute top-1/2 right-2 -translate-y-1/2 p-2 text-oxley-300 transition-[color,scale] duration-150 ease-out-quart hover:text-on-surface active:scale-90 active:duration-0 sm:right-4"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -329,7 +347,8 @@ export function PhotoGallery({
                 width={1600}
                 height={Math.round(1600 / ratioValue(current.aspect))}
                 sizes="92vw"
-                className="h-auto max-h-[82vh] w-auto max-w-[92vw] object-contain [animation:fade-in_200ms_ease-out]"
+                quality={PHOTO_QUALITY}
+                className="h-auto max-h-[82vh] w-auto max-w-[92vw] animate-fade-in object-contain"
               />
             ) : (
               <div className="aspect-[3/2] w-[60vw] bg-oxley-700/15" />

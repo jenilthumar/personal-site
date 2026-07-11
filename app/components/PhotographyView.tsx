@@ -2,6 +2,7 @@ import type { WorkItem } from "@/lib/content";
 import { countPhotos } from "@/lib/content";
 import { Wordmark } from "./Wordmark";
 import { PhotoGallery } from "./PhotoGallery";
+import { FilmSpotlight } from "./FilmSpotlight";
 import { NextWork } from "./NextWork";
 
 /** Photo set: a quiet title + description header, then a curated photo flow. */
@@ -37,6 +38,16 @@ export function PhotographyView({
           )}
         </div>
       </header>
+
+      {item.url && (
+        <div className="mb-16 sm:mb-20">
+          <FilmSpotlight
+            url={item.url}
+            note={item.filmNote}
+            title={item.title}
+          />
+        </div>
+      )}
 
       <PhotoGallery photos={item.photos} title={item.title} />
 
