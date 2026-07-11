@@ -132,7 +132,7 @@ export function SidebarNav({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 transition-colors hover:text-oxley-300"
                   >
-                    <span className="relative inline-block size-5 shrink-0 overflow-hidden bg-on-surface">
+                    <span className="relative inline-block size-5 shrink-0 translate-y-[2px] overflow-hidden bg-on-surface">
                       <Image
                         src={mediaUrl(site.current.logo)}
                         alt={`${site.current.company} logo`}
