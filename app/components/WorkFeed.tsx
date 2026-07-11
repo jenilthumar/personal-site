@@ -61,7 +61,11 @@ function MediaBlock({
       <div className="flex gap-2">
         {block.images.map((image, index) => (
           <div key={index} className="min-w-0 flex-1">
-            <ImageBlock image={image} sizes={HALF_SIZES} />
+            <ImageBlock
+              image={image}
+              sizes={HALF_SIZES}
+              priority={priority && index === 0}
+            />
           </div>
         ))}
       </div>
@@ -88,6 +92,11 @@ export function WorkFeed({
   /** One entry per project, filled with its <section> for tracking + jumps. */
   sectionsRef: RefObject<(HTMLElement | null)[]>;
 }) {
+  // The feed's LCP is the first image, which isn't necessarily the first block:
+  // a project can lead with a video (a plain <video>, no next/image to flag), so
+  // the first real image may be a later project's hero. Prioritize that one.
+  const lcp = firstImageBlock(projects);
+
   return (
     <div className="flex flex-col gap-2">
       {projects.map((project, index) => (
@@ -103,11 +112,27 @@ export function WorkFeed({
             <MediaBlock
               key={blockIndex}
               block={block}
-              priority={index === 0 && blockIndex === 0}
+              priority={
+                lcp !== null && lcp.project === index && lcp.block === blockIndex
+              }
             />
           ))}
         </section>
       ))}
     </div>
   );
+}
+
+/** Coordinates of the first image-bearing block (image or row) in feed order,
+ * skipping video blocks; null if the feed has no images at all. */
+function firstImageBlock(
+  projects: FeedProject[],
+): { project: number; block: number } | null {
+  for (let project = 0; project < projects.length; project++) {
+    const media = projects[project].media;
+    for (let block = 0; block < media.length; block++) {
+      if (media[block].kind !== "video") return { project, block };
+    }
+  }
+  return null;
 }
