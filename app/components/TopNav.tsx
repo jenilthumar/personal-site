@@ -17,7 +17,20 @@ import { BulletMark, CornerBrackets } from "./PixelMarks";
 
 export type NavItem = { slug: string; title: string; href: string };
 
-const ICON_BOX = "relative size-6 shrink-0 overflow-hidden";
+/**
+ * The 24px box each glyph sits in, plus its hover.
+ *
+ * The icons are pixel art, so the hop is quantised to match: `steps(2)` moves
+ * it in two 1px jumps instead of gliding, which reads as a sprite nudging
+ * rather than CSS easing. `jump-start` spends the first jump immediately, so
+ * the icon has already moved on the frame the pointer lands.
+ *
+ * It hangs off the whole nav group, not the glyph — hovering anywhere in the
+ * Projects list nudges the folder. The folder headers aren't links, so
+ * reacting to their own hover would imply a click that isn't there.
+ */
+const ICON_BOX =
+  "relative size-6 shrink-0 overflow-hidden transition-[translate,filter] duration-150 ease-[steps(2,jump-start)] group-hover/nav:brightness-125 motion-safe:group-hover/nav:-translate-y-0.5";
 
 function FolderGroup({
   icon,
@@ -35,7 +48,7 @@ function FolderGroup({
 }) {
   if (!items.length) return null;
   return (
-    <section className="flex flex-col gap-2">
+    <section className="group/nav flex flex-col gap-2">
       <h2 className={`flex items-center ${headerGap} font-medium text-on-surface`}>
         {icon}
         {label}
@@ -69,7 +82,7 @@ function PageLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-1 self-start font-medium text-on-surface transition-colors hover:text-oxley-300"
+      className="group/nav flex items-center gap-1 self-start font-medium text-on-surface transition-colors hover:text-oxley-300"
     >
       {icon}
       {label}
