@@ -17,8 +17,8 @@ import { ChevronMark } from "./PixelMarks";
  * row is just a row of one, so it fills the column.
  */
 
-/** Content column: 1376px inside the 1440px frame, minus gutters below that. */
-const COLUMN_PX = 1376;
+/** Widest the media column gets: the 1920px frame less its 32px gutters. */
+const COLUMN_PX = 1856;
 
 function ratio(aspect: string): number {
   const [w, h] = aspect.split("/").map(Number);
@@ -28,7 +28,7 @@ function ratio(aspect: string): number {
 /** What each cell of a row asks the optimizer for, given its share of the row. */
 function cellSizes(share: number): string {
   const wide = Math.round(COLUMN_PX * share);
-  return `(min-width: 1440px) ${wide}px, ${Math.round(share * 100)}vw`;
+  return `(min-width: 1920px) ${wide}px, ${Math.round(share * 100)}vw`;
 }
 
 function Cell({
