@@ -1,23 +1,5 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-
-/* ── Typeface ───────────────────────────────────────────────────────────────
- * AUTHENTIC Sans, self-hosted from app/fonts/ (converted otf → woff2).
- * The design uses two of its named weights: 90 (body) and 130 (headings),
- * exposed to CSS as font-weight 400 and 500 respectively. AUTHENTIC Sans is a
- * deliberately minimal font (basic Latin + em dash); symbols it lacks (®, ∙,
- * arrows…) fall through to the `--font-authentic-sans` family's fallbacks in
- * globals.css. Weights 60 and 150 are also in app/fonts/ if ever needed.
- */
-const authenticSans = localFont({
-  variable: "--font-authentic-sans",
-  display: "swap",
-  src: [
-    { path: "./fonts/authentic-sans-90.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/authentic-sans-130.woff2", weight: "500", style: "normal" },
-  ],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +23,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${authenticSans.variable} h-full`}>
+    <html lang="en" className="h-full">
+      {/* ── Typeface ─────────────────────────────────────────────────────────
+       * Inter, served from rsms.me the way the typeface's own site does it.
+       * Modern browsers get InterVariable (one file, all weights plus the opsz
+       * optical-size axis, so no separate InterDisplay face is needed); the
+       * @supports fallback in globals.css covers the rest.
+       *
+       * Note the emitted <head> puts the Turbopack CSS bundle above these — a
+       * React hoisting rule we can't opt out of (a `precedence` prop doesn't
+       * beat Next's own). Harmless here: inter.css is nothing but @font-face
+       * and @font-feature-values, so it never competes in the cascade, and
+       * Next auto-emits a preload for it so the fetch still starts early.
+       */}
+      <head>
+        <link rel="preconnect" href="https://rsms.me/" />
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+      </head>
       <body className="min-h-screen">{children}</body>
     </html>
   );

@@ -21,7 +21,7 @@
   --color-on-surface: var(--on-surface);
   --color-oxley-700: var(--oxley-700);
 
-  --font-sans: var(--font-authentic-sans);
+  --font-sans: var(--font-inter);
 }
 
 /* Dark-only design — tell the UA to render form controls / scrollbars dark. */
@@ -29,13 +29,37 @@
   color-scheme: dark;
 }
 
+/* ── Typeface: Inter, set up the way rsms.me/inter prescribes ───────────────
+   'liga' and 'calt' are opt-in in Chrome, so they're switched on explicitly.
+   Browsers with variable-font support get InterVariable — one file carrying
+   every weight plus the opsz optical-size axis, which is why there's no
+   separate InterDisplay face. The family lives in --font-inter so Tailwind's
+   font-sans utility follows the same swap. */
+:root {
+  --font-inter: Inter, sans-serif;
+  font-family: var(--font-inter);
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+@supports (font-variation-settings: normal) {
+  :root {
+    --font-inter: InterVariable, sans-serif;
+  }
+}
+
 body {
   background-color: var(--surface);
   color: var(--on-surface);
-  font-family: var(--font-authentic-sans), ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Headings render at the display end of the optical-size axis: tighter
+   spacing and finer joints than the text-optimised default. */
+h1,
+h2 {
+  font-variation-settings: "opsz" 32;
 }
 
 ::selection {
