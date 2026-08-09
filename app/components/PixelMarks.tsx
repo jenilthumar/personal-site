@@ -38,26 +38,30 @@ export function ChevronMark({ className = "" }: { className?: string }) {
 
 /**
  * The four corner ticks around the Contact button. One L-path, flipped into
- * each corner the way the design does it, sitting just inside the box so the
- * 0.75 stroke doesn't straddle the edge.
+ * each corner the way the design does it.
+ *
+ * They live in a box rather than being pinned individually, so a caller can
+ * animate that one box's inset and have all four close in together — the
+ * reticle move. It sits at 0.49px by default, half the 0.75 stroke, so the
+ * stroke falls inside the button's edge instead of straddling it.
  */
 const CORNERS = [
-  "left-[0.49px] top-[0.49px]",
-  "right-[0.49px] top-[0.49px] -scale-x-100",
-  "left-[0.49px] bottom-[0.49px] -scale-y-100",
-  "right-[0.49px] bottom-[0.49px] rotate-180",
+  "left-0 top-0",
+  "right-0 top-0 -scale-x-100",
+  "left-0 bottom-0 -scale-y-100",
+  "right-0 bottom-0 rotate-180",
 ];
 
-export function CornerBrackets() {
+export function CornerBrackets({ className = "" }: { className?: string }) {
   return (
-    <>
+    <span className={`pointer-events-none absolute inset-[0.49px] ${className}`}>
       {CORNERS.map((position) => (
         <svg
           key={position}
           viewBox="0 0 8.41078 8.38477"
           fill="none"
           aria-hidden="true"
-          className={`pointer-events-none absolute h-[8.38px] w-[8.41px] ${position}`}
+          className={`absolute h-[8.38px] w-[8.41px] ${position}`}
         >
           <path
             d="M0.375 8.38477V0.375H8.41078"
@@ -66,6 +70,6 @@ export function CornerBrackets() {
           />
         </svg>
       ))}
-    </>
+    </span>
   );
 }

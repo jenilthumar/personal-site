@@ -77,18 +77,24 @@ function PageLink({
   );
 }
 
-/** Contact, framed by four corner ticks that light up with the label. */
+/**
+ * Contact, framed by four corner ticks. On hover the ticks close 3px in on the
+ * label and everything lifts to white — a reticle finding its mark, which is
+ * the one gesture the bracket frame is already asking for. Keyboard focus gets
+ * the same treatment, so it reads as a state rather than a mouse trick.
+ *
+ * The travel sits behind `motion-safe`, per the house rule in globals.css:
+ * the colour shift stays for everyone, only the movement is conditional.
+ */
 function ContactButton({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-colors hover:text-oxley-300"
+      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-colors duration-200 ease-out-quart hover:text-oxley-300 focus-visible:text-oxley-300"
     >
-      <span className="text-[#cccccc] transition-colors group-hover:text-oxley-300">
-        <CornerBrackets />
-      </span>
+      <CornerBrackets className="text-[#cccccc] transition-[inset,color] duration-200 ease-out-quart group-hover:text-oxley-300 group-focus-visible:text-oxley-300 motion-safe:group-hover:inset-[3.5px] motion-safe:group-focus-visible:inset-[3.5px]" />
       Contact
-      <span className="relative size-4 shrink-0 overflow-hidden rounded-[3px] bg-gradient-to-b from-on-surface/10 to-[#bfbfbf]/10">
+      <span className="relative size-4 shrink-0 overflow-hidden rounded-[3px] bg-gradient-to-b from-on-surface/10 to-[#bfbfbf]/10 transition-colors duration-200 ease-out-quart group-hover:from-on-surface/25 group-hover:to-[#bfbfbf]/25">
         <Image
           src="/nav/contact.png"
           alt=""
