@@ -15,9 +15,16 @@ import { ChevronMark } from "./PixelMarks";
  * proportional widths drift, because a two-cell row clears one gap where a
  * three-cell row clears two. Grid does the gap arithmetic for us.
  *
- * The first cell carries the aspect ratio and so sets the row's height; the
- * rest fill it and crop, which is how the design fits a phone shot beside a
- * wide render. Reorder a row to change which image is the uncropped one.
+ * A flush row plus aligned columns means someone has to crop: a 2-column 16:9
+ * and a 1-column phone shot differ by about 7% in height whatever you do, and
+ * no sane column count closes that. So the choice is only where the crop
+ * lands, and it goes to the tallest cell's advantage — that cell carries the
+ * aspect ratio and sets the row height, and the others fill it.
+ *
+ * The effect is that nothing is ever cropped top and bottom, only at the
+ * sides, and only images already wider than the row needs. That matters
+ * because the tall cells here are phone mockups: 3% off a wide render's edges
+ * is invisible, 3% off a phone's is its browser bar.
  *
  * Below `md` the row stacks. Three columns of a 390px screen is 114px a cell,
  * which turns a UI screenshot into noise — even 640px only buys 197px, so the
@@ -52,6 +59,7 @@ const COLUMN_SPAN: Record<number, string> = {
 
 /** Columns a row divides into. Gap is Tailwind's gap-2 (8px), as drawn. */
 const COLUMNS = 3;
+const GAP_PX = 8;
 
 /** Widest the content column gets: the 1920px frame less its 32px gutters. */
 const COLUMN_PX = 1856;
@@ -75,6 +83,28 @@ function columnSpans(cells: Cell[]): number[] {
     return ratio(first.aspect) >= ratio(second.aspect) ? [2, 1] : [1, 2];
   }
   return cells.map(() => 1);
+}
+
+/**
+ * The cell that sets the row's height: whichever is tallest at its own span.
+ * Column width cancels out of the comparison, so a nominal width settles it
+ * for every breakpoint.
+ */
+function tallestCell(cells: Cell[], spans: number[], columns: number): number {
+  const column = (COLUMN_PX - (columns - 1) * GAP_PX) / columns;
+  let lead = 0;
+  let tallest = 0;
+
+  spans.forEach((span, index) => {
+    const width = span * column + (span - 1) * GAP_PX;
+    const height = width / ratio(cells[index].aspect);
+    if (height > tallest) {
+      tallest = height;
+      lead = index;
+    }
+  });
+
+  return lead;
 }
 
 /** What a cell asks the optimizer for, given its share of the content column. */
@@ -156,6 +186,7 @@ function Row({
 
   const spans = columnSpans(cells);
   const columns = spans.reduce((total, span) => total + span, 0);
+  const lead = tallestCell(cells, spans, columns);
 
   return (
     <div
@@ -170,7 +201,7 @@ function Row({
         >
           <Cell
             block={cell}
-            lead={index === 0}
+            lead={index === lead}
             sizes={cellSizes(spans[index] / columns)}
             eager={eager && index === 0}
           />
