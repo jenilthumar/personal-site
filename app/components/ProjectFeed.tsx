@@ -7,17 +7,23 @@ import { ChevronMark } from "./PixelMarks";
 
 /**
  * The home work feed: each project introduced by a header line, then its media
- * in authored order.
+ * in the rows the project declares (see FeedRowSpec in lib/content).
  *
- * Rows are justified rather than split evenly. Every cell gets `flex-basis: 0`
- * and a `flex-grow` equal to its aspect ratio, so widths come out proportional
- * to shape and the quotient — the height — lands identical across the row. A
- * 16:9 next to a 4:5 therefore reads as one band, which is what the design
- * does with the wide Opera render beside the phone shot. A block that isn't a
- * row is just a row of one, so it fills the column.
+ * Rows sit on a three-column grid so their edges line up down the page. The
+ * design breaks Opera's first row at 914.67px, which is exactly where the
+ * second row's third column starts, and that only holds on a real grid:
+ * proportional widths drift, because a two-cell row clears one gap where a
+ * three-cell row clears two. Grid does the gap arithmetic for us.
+ *
+ * The first cell carries the aspect ratio and so sets the row's height; the
+ * rest fill it and crop, which is how the design fits a phone shot beside a
+ * wide render. Reorder a row to change which image is the uncropped one.
  */
 
-/** Widest the media column gets: the 1920px frame less its 32px gutters. */
+/** Columns a row divides into. Gap is Tailwind's gap-2 (8px), as drawn. */
+const COLUMNS = 3;
+
+/** Widest the content column gets: the 1920px frame less its 32px gutters. */
 const COLUMN_PX = 1856;
 
 function ratio(aspect: string): number {
@@ -25,7 +31,23 @@ function ratio(aspect: string): number {
   return w > 0 && h > 0 ? w / h : 16 / 9;
 }
 
-/** What each cell of a row asks the optimizer for, given its share of the row. */
+type Cell = FeedImage & { kind?: string; poster?: string };
+
+/**
+ * Columns each cell takes. One cell fills the row; two split it 2/1 with the
+ * wider image taking the pair, which is the design's landscape-beside-portrait
+ * pairing; three or more take a column each.
+ */
+function columnSpans(cells: Cell[]): number[] {
+  if (cells.length === 1) return [COLUMNS];
+  if (cells.length === 2) {
+    const [first, second] = cells;
+    return ratio(first.aspect) >= ratio(second.aspect) ? [2, 1] : [1, 2];
+  }
+  return cells.map(() => 1);
+}
+
+/** What a cell asks the optimizer for, given its share of the content column. */
 function cellSizes(share: number): string {
   const wide = Math.round(COLUMN_PX * share);
   return `(min-width: 1920px) ${wide}px, ${Math.round(share * 100)}vw`;
@@ -33,13 +55,18 @@ function cellSizes(share: number): string {
 
 function Cell({
   block,
+  lead,
   sizes,
   eager,
 }: {
-  block: FeedImage & { kind?: string; poster?: string };
+  block: Cell;
+  /** First cell of the row: its aspect ratio is what gives the row its height. */
+  lead: boolean;
   sizes: string;
   eager: boolean;
 }) {
+  // Only a video that owns its whole row reaches here, so it's always the lead
+  // and keeps its own aspect box.
   if (block.kind === "video") {
     return (
       <FeedVideo
@@ -50,10 +77,15 @@ function Cell({
       />
     );
   }
+
   return (
     <div
-      className="relative w-full overflow-hidden bg-oxley-700/10"
-      style={{ aspectRatio: block.aspect.replace("/", " / ") }}
+      className={
+        lead
+          ? "relative w-full overflow-hidden bg-oxley-700/10"
+          : "absolute inset-0 overflow-hidden bg-oxley-700/10"
+      }
+      style={lead ? { aspectRatio: block.aspect.replace("/", " / ") } : undefined}
     >
       <Image
         src={mediaUrl(block.src)}
@@ -72,29 +104,34 @@ function Cell({
   );
 }
 
-/** One media block laid out as a justified row (a single block fills the width). */
 function Row({ block, eager }: { block: FeedMedia; eager: boolean }) {
-  const cells =
+  const cells: Cell[] =
     block.kind === "row"
-      ? block.images.map((image) => ({ ...image, kind: "image" as const }))
+      ? block.images.map((image) => ({ ...image, kind: "image" }))
       : [block];
 
-  const total = cells.reduce((sum, cell) => sum + ratio(cell.aspect), 0);
+  const spans = columnSpans(cells);
+  const columns = spans.reduce((total, span) => total + span, 0);
 
   return (
-    <div className="flex gap-2">
-      {cells.map((cell, index) => {
-        const share = ratio(cell.aspect) / total;
-        return (
-          <div
-            key={index}
-            className="min-w-0"
-            style={{ flex: `${ratio(cell.aspect)} 1 0` }}
-          >
-            <Cell block={cell} sizes={cellSizes(share)} eager={eager && index === 0} />
-          </div>
-        );
-      })}
+    <div
+      className="grid gap-2"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
+      {cells.map((cell, index) => (
+        <div
+          key={index}
+          className="relative min-w-0"
+          style={{ gridColumn: `span ${spans[index]}` }}
+        >
+          <Cell
+            block={cell}
+            lead={index === 0}
+            sizes={cellSizes(spans[index] / columns)}
+            eager={eager && index === 0}
+          />
+        </div>
+      ))}
     </div>
   );
 }
