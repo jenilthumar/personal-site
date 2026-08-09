@@ -18,7 +18,28 @@ import { ChevronMark } from "./PixelMarks";
  * The first cell carries the aspect ratio and so sets the row's height; the
  * rest fill it and crop, which is how the design fits a phone shot beside a
  * wide render. Reorder a row to change which image is the uncropped one.
+ *
+ * Below `md` the row stacks. Three columns of a 390px screen is 114px a cell,
+ * which turns a UI screenshot into noise — even 640px only buys 197px, so the
+ * grid starts at 768px where a cell clears 240px. Stacked cells also keep
+ * their own aspect instead of cropping to a shared height, since there's no
+ * row for them to line up with.
  */
+
+// Tailwind needs these as literal strings to generate them, so they're mapped
+// rather than interpolated. Spans only ever come out 1–3; a row wider than six
+// columns isn't something the design does.
+const GRID_COLUMNS: Record<number, string> = {
+  3: "md:grid-cols-3",
+  4: "md:grid-cols-4",
+  5: "md:grid-cols-5",
+  6: "md:grid-cols-6",
+};
+const COLUMN_SPAN: Record<number, string> = {
+  1: "md:col-span-1",
+  2: "md:col-span-2",
+  3: "md:col-span-3",
+};
 
 /** Columns a row divides into. Gap is Tailwind's gap-2 (8px), as drawn. */
 const COLUMNS = 3;
@@ -50,7 +71,9 @@ function columnSpans(cells: Cell[]): number[] {
 /** What a cell asks the optimizer for, given its share of the content column. */
 function cellSizes(share: number): string {
   const wide = Math.round(COLUMN_PX * share);
-  return `(min-width: 1920px) ${wide}px, ${Math.round(share * 100)}vw`;
+  const part = Math.round(share * 100);
+  // Full width once the row stacks.
+  return `(min-width: 1920px) ${wide}px, (min-width: 768px) ${part}vw, 100vw`;
 }
 
 function Cell({
@@ -80,12 +103,15 @@ function Cell({
 
   return (
     <div
+      // Stacked, every cell keeps its own aspect box. In a row, the cells after
+      // the first go absolute so the lead's height is the one that counts —
+      // which also makes their aspect-ratio inert, both dimensions being fixed.
       className={
         lead
           ? "relative w-full overflow-hidden bg-oxley-700/10"
-          : "absolute inset-0 overflow-hidden bg-oxley-700/10"
+          : "relative w-full overflow-hidden bg-oxley-700/10 md:absolute md:inset-0"
       }
-      style={lead ? { aspectRatio: block.aspect.replace("/", " / ") } : undefined}
+      style={{ aspectRatio: block.aspect.replace("/", " / ") }}
     >
       <Image
         src={mediaUrl(block.src)}
@@ -114,15 +140,11 @@ function Row({ block, eager }: { block: FeedMedia; eager: boolean }) {
   const columns = spans.reduce((total, span) => total + span, 0);
 
   return (
-    <div
-      className="grid gap-2"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-    >
+    <div className={`grid grid-cols-1 gap-2 ${GRID_COLUMNS[columns] ?? "md:grid-cols-3"}`}>
       {cells.map((cell, index) => (
         <div
           key={index}
-          className="relative min-w-0"
-          style={{ gridColumn: `span ${spans[index]}` }}
+          className={`relative min-w-0 ${COLUMN_SPAN[spans[index]] ?? ""}`}
         >
           <Cell
             block={cell}
