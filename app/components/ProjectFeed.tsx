@@ -24,7 +24,16 @@ import { ChevronMark } from "./PixelMarks";
  * grid starts at 768px where a cell clears 240px. Stacked cells also keep
  * their own aspect instead of cropping to a shared height, since there's no
  * row for them to line up with.
+ *
+ * Stacking costs length, and portraits are what it costs: 435px each at full
+ * width against 201 for a landscape, and Opera stacks four of them. So the
+ * phone shows a project's first row only. That keeps mobile at roughly the
+ * two screens a project gets in the design, instead of five, and the header's
+ * View project link is right there for the rest.
  */
+
+/** Rows a project shows before `md`. Its first row is the strongest pair. */
+const ROWS_BELOW_MD = 1;
 
 // Tailwind needs these as literal strings to generate them, so they're mapped
 // rather than interpolated. Spans only ever come out 1–3; a row wider than six
@@ -130,7 +139,16 @@ function Cell({
   );
 }
 
-function Row({ block, eager }: { block: FeedMedia; eager: boolean }) {
+function Row({
+  block,
+  eager,
+  phone,
+}: {
+  block: FeedMedia;
+  eager: boolean;
+  /** Whether this row survives below `md`. */
+  phone: boolean;
+}) {
   const cells: Cell[] =
     block.kind === "row"
       ? block.images.map((image) => ({ ...image, kind: "image" }))
@@ -140,7 +158,11 @@ function Row({ block, eager }: { block: FeedMedia; eager: boolean }) {
   const columns = spans.reduce((total, span) => total + span, 0);
 
   return (
-    <div className={`grid grid-cols-1 gap-2 ${GRID_COLUMNS[columns] ?? "md:grid-cols-3"}`}>
+    <div
+      className={`grid grid-cols-1 gap-2 ${GRID_COLUMNS[columns] ?? "md:grid-cols-3"} ${
+        phone ? "" : "max-md:hidden"
+      }`}
+    >
       {cells.map((cell, index) => (
         <div
           key={index}
@@ -191,7 +213,12 @@ function ProjectSection({
 
       <div className="flex flex-col gap-2">
         {project.media.map((block, index) => (
-          <Row key={index} block={block} eager={eager && index === 0} />
+          <Row
+            key={index}
+            block={block}
+            eager={eager && index === 0}
+            phone={index < ROWS_BELOW_MD}
+          />
         ))}
       </div>
     </section>
