@@ -78,23 +78,28 @@ function PageLink({
 }
 
 /**
- * Contact, framed by four corner ticks. On hover the ticks close 3px in on the
- * label and everything lifts to white — a reticle finding its mark, which is
- * the one gesture the bracket frame is already asking for. Keyboard focus gets
- * the same treatment, so it reads as a state rather than a mouse trick.
+ * Contact, framed by four corner ticks that behave like a reticle: hover draws
+ * them 3.5px onto the label, pressing clamps them to 6 and squashes the whole
+ * button. Keyboard focus gets the hover state, so it reads as a state rather
+ * than a mouse trick.
  *
- * The travel sits behind `motion-safe`, per the house rule in globals.css:
- * the colour shift stays for everyone, only the movement is conditional.
+ * Timing is the site's press idiom, the one the sidebar toggle and the work
+ * cards use — `active:duration-0`, so the press lands with no lag at all and
+ * only the release is eased. Hover comes in at 150ms and relaxes out at 250,
+ * which is what keeps it feeling answered rather than animated.
+ *
+ * Travel sits behind `motion-safe`, per the house rule in globals.css: the
+ * colour shift stays for everyone, only the movement is conditional.
  */
 function ContactButton({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-colors duration-200 ease-out-quart hover:text-oxley-300 focus-visible:text-oxley-300"
+      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-[color,scale] duration-250 ease-out-quart hover:text-oxley-300 hover:duration-150 focus-visible:text-oxley-300 active:duration-0 motion-safe:active:scale-[0.96]"
     >
-      <CornerBrackets className="text-[#cccccc] transition-[inset,color] duration-200 ease-out-quart group-hover:text-oxley-300 group-focus-visible:text-oxley-300 motion-safe:group-hover:inset-[3.5px] motion-safe:group-focus-visible:inset-[3.5px]" />
+      <CornerBrackets className="text-[#cccccc] transition-[inset,color] duration-250 ease-out-quart group-hover:text-oxley-300 group-hover:duration-150 group-focus-visible:text-oxley-300 group-active:duration-0 motion-safe:group-hover:inset-[3.5px] motion-safe:group-focus-visible:inset-[3.5px] motion-safe:group-active:inset-[6px]" />
       Contact
-      <span className="relative size-4 shrink-0 overflow-hidden rounded-[3px] bg-gradient-to-b from-on-surface/10 to-[#bfbfbf]/10 transition-colors duration-200 ease-out-quart group-hover:from-on-surface/25 group-hover:to-[#bfbfbf]/25">
+      <span className="relative size-4 shrink-0 overflow-hidden rounded-[3px] bg-gradient-to-b from-on-surface/10 to-[#bfbfbf]/10 transition-colors duration-250 ease-out-quart group-hover:from-on-surface/25 group-hover:to-[#bfbfbf]/25 group-hover:duration-150 group-active:from-on-surface/40 group-active:to-[#bfbfbf]/40 group-active:duration-0">
         <Image
           src="/nav/contact.png"
           alt=""
