@@ -40,6 +40,22 @@ export function countPhotos(blocks: PhotoBlock[] = []): number {
   );
 }
 
+/**
+ * One row of the home feed, declared per project as `feed:` in frontmatter.
+ *
+ * The home page shows a curated cut of a project, not the whole case study, so
+ * the rows are stated rather than derived. An entry names media the project
+ * already has — by file stem ("01-hero-thumbnail") or full path — and inherits
+ * its aspect and alt from the case study, so nothing is written twice. The
+ * object form covers anything the case study doesn't hold.
+ *
+ *   feed:
+ *     - [01-hero-thumbnail, 02-home-screen-mobile]
+ *     - [05-mobile, 06-mobile, 03-metadata]
+ */
+export type FeedEntry = string | { src: string; aspect?: string; alt?: string };
+export type FeedRowSpec = FeedEntry[];
+
 export type WorkItem = {
   slug: string;
   title: string;
@@ -69,6 +85,9 @@ export type WorkItem = {
   /** External link. Projects render it as "Visit"; photography treats a YouTube
    * link as the item's film (shown by FilmSpotlight). */
   url?: string;
+
+  /** Curated home-feed rows; see FeedRowSpec. Absent means "replay the body". */
+  feed?: FeedRowSpec[];
 
   // ── Photography page ──────────────────────────────────────────────────
   /** One-line note shown under the film, when `url` is a YouTube link. */
@@ -107,6 +126,11 @@ export function getAllWork(): WorkItem[] {
       client: data.client,
       company: data.company,
       url: data.url,
+      feed: Array.isArray(data.feed)
+        ? data.feed.map((row: FeedEntry | FeedEntry[]) =>
+            Array.isArray(row) ? row : [row],
+          )
+        : undefined,
       filmNote: data.filmNote,
       photos: Array.isArray(data.photos) ? data.photos : undefined,
     };
@@ -200,10 +224,104 @@ function parseBodyMedia(body: string): FeedMedia[] {
   return media;
 }
 
+/** A media path reduced to its file stem: "work/x/01-hero.webp?v=2" → "01-hero". */
+function stem(src: string): string {
+  const file = src.split("?")[0].split("/").pop() ?? src;
+  return file.replace(/\.[a-z0-9]+$/i, "");
+}
+
+type KnownMedia = FeedImage & { kind: "image" | "video"; poster?: string };
+
 /**
- * Projects for the home feed, newest first: each leads with its hero (the
- * loop video when there is one), then the case-study media as authored.
- * Photography stays out; a project with no media at all is skipped.
+ * Everything a project could put in its feed — hero, hero video, and every
+ * body block — keyed by both full path and file stem so `feed:` can name an
+ * image the short way. First writer wins, so the hero's 16:9 isn't displaced
+ * by a body copy of the same file.
+ */
+function knownMedia(item: WorkItem, body: FeedMedia[]): Map<string, KnownMedia> {
+  const index = new Map<string, KnownMedia>();
+  const add = (entry: KnownMedia) => {
+    for (const key of [entry.src, stem(entry.src)]) {
+      if (!index.has(key)) index.set(key, entry);
+    }
+  };
+
+  const heroImage = item.hero ?? item.cover;
+  if (heroImage) {
+    add({ src: heroImage, alt: item.title, aspect: "16/9", kind: "image" });
+  }
+  if (item.heroVideo) {
+    add({
+      src: item.heroVideo,
+      alt: item.title,
+      aspect: "16/9",
+      kind: "video",
+      poster: heroImage,
+    });
+  }
+
+  for (const block of body) {
+    if (block.kind === "row") {
+      for (const image of block.images) add({ ...image, kind: "image" });
+    } else {
+      add(block);
+    }
+  }
+
+  return index;
+}
+
+/**
+ * A declared row turned into feed media. Entries that name nothing the project
+ * has, and carry no aspect of their own, are dropped rather than guessed at. A
+ * row of one is emitted as a plain block so it fills the column.
+ */
+function resolveRow(
+  row: FeedRowSpec,
+  index: Map<string, KnownMedia>,
+): FeedMedia | null {
+  const cells = row.flatMap((entry): KnownMedia[] => {
+    const spec = typeof entry === "string" ? { src: entry } : entry;
+    const known = index.get(spec.src) ?? index.get(stem(spec.src));
+    if (!known && !spec.aspect) return [];
+    return [
+      {
+        src: known?.src ?? spec.src,
+        alt: spec.alt ?? known?.alt ?? "",
+        aspect: spec.aspect ?? known?.aspect ?? "16/9",
+        kind: known?.kind ?? "image",
+        poster: known?.poster,
+      },
+    ];
+  });
+
+  if (!cells.length) return null;
+
+  if (cells.length === 1) {
+    const [only] = cells;
+    return only.kind === "video"
+      ? { kind: "video", src: only.src, poster: only.poster, alt: only.alt, aspect: only.aspect }
+      : { kind: "image", src: only.src, alt: only.alt, aspect: only.aspect };
+  }
+
+  // Side-by-side cells are stills; a video sharing a row shows its poster.
+  return {
+    kind: "row",
+    images: cells.map(({ src, alt, aspect, kind, poster }) => ({
+      src: kind === "video" ? (poster ?? src) : src,
+      alt,
+      aspect,
+    })),
+  };
+}
+
+/**
+ * Projects for the home feed, newest first.
+ *
+ * A project with a `feed:` block shows exactly the rows it declares. Without
+ * one it falls back to replaying the case study: the hero first (the loop
+ * video when there is one), then the body media as authored. Photography stays
+ * out; a project with no media at all is skipped.
  */
 export function getWorkFeed(): FeedProject[] {
   return getWorkByCategory("project")
@@ -213,25 +331,34 @@ export function getWorkFeed(): FeedProject[] {
         "utf8",
       );
       const { content } = matter(raw);
+      const body = parseBodyMedia(content);
 
-      const media: FeedMedia[] = [];
-      const heroImage = item.hero ?? item.cover;
-      if (item.heroVideo) {
-        media.push({
-          kind: "video",
-          src: item.heroVideo,
-          poster: heroImage,
-          alt: item.title,
-          aspect: "16/9",
-        });
-      } else if (heroImage) {
-        media.push({ kind: "image", src: heroImage, alt: item.title, aspect: "16/9" });
-      }
+      let media: FeedMedia[];
+      if (item.feed?.length) {
+        const index = knownMedia(item, body);
+        media = item.feed
+          .map((row) => resolveRow(row, index))
+          .filter((block): block is FeedMedia => block !== null);
+      } else {
+        media = [];
+        const heroImage = item.hero ?? item.cover;
+        if (item.heroVideo) {
+          media.push({
+            kind: "video",
+            src: item.heroVideo,
+            poster: heroImage,
+            alt: item.title,
+            aspect: "16/9",
+          });
+        } else if (heroImage) {
+          media.push({ kind: "image", src: heroImage, alt: item.title, aspect: "16/9" });
+        }
 
-      for (const block of parseBodyMedia(content)) {
-        // The hero often doubles as a body image — don't show it twice.
-        if (block.kind === "image" && block.src === heroImage) continue;
-        media.push(block);
+        for (const block of body) {
+          // The hero often doubles as a body image — don't show it twice.
+          if (block.kind === "image" && block.src === heroImage) continue;
+          media.push(block);
+        }
       }
 
       return {
