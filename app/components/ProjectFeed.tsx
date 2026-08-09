@@ -142,15 +142,21 @@ function Cell({
 
   return (
     <div
-      // Stacked, every cell keeps its own aspect box. In a row, the cells after
-      // the first go absolute so the lead's height is the one that counts —
-      // which also makes their aspect-ratio inert, both dimensions being fixed.
+      // Stacked, every cell keeps its own aspect box. In a row, the cells that
+      // don't set the height go absolute and fill it instead.
+      //
+      // The ratio arrives as a custom property rather than as `aspect-ratio`
+      // directly, because it has to switch off at `md` and an inline style
+      // can't carry a breakpoint — nor be overridden by one. Leaving it on was
+      // the bug: `aspect-ratio` outranks the top/bottom pair on an absolutely
+      // positioned box, so a filling cell sized itself to width ÷ ratio and
+      // came up short of the row wherever the two aspects differed.
       className={
         lead
-          ? "relative w-full overflow-hidden bg-oxley-700/10"
-          : "relative w-full overflow-hidden bg-oxley-700/10 md:absolute md:inset-0"
+          ? "relative w-full overflow-hidden bg-oxley-700/10 aspect-[var(--cell-ratio)]"
+          : "relative w-full overflow-hidden bg-oxley-700/10 aspect-[var(--cell-ratio)] md:absolute md:inset-0 md:aspect-auto"
       }
-      style={{ aspectRatio: block.aspect.replace("/", " / ") }}
+      style={{ "--cell-ratio": block.aspect.replace("/", " / ") } as React.CSSProperties}
     >
       <Image
         src={mediaUrl(block.src)}
