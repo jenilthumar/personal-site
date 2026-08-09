@@ -83,11 +83,11 @@ function PageLink({
  * the button. Keyboard focus gets the hover state, so it reads as a state
  * rather than a mouse trick.
  *
- * The press scale is deliberately small. The tick clamp already reads as the
- * frame contracting, so a scale on top of it compounds, and scaling a button
- * that's mostly a word means scaling the word — which shows up as the type
- * resizing well before it reads as give. The clamp carries the press; the
- * scale just backs it.
+ * The press doesn't scale the button at all. The tick clamp already reads as
+ * the frame contracting, and scaling a button that's mostly a word means
+ * scaling the word — the type visibly resizes long before it registers as
+ * give, and the two compound into something that just looks small. So the
+ * clamp and the chip carry the press on their own.
  *
  * Timing is the site's press idiom, the one the sidebar toggle and the work
  * cards use — `active:duration-0`, so the press lands with no lag at all and
@@ -101,7 +101,7 @@ function ContactButton({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-[color,scale] duration-250 ease-out-quart hover:text-oxley-300 hover:duration-150 focus-visible:text-oxley-300 active:duration-0 motion-safe:active:scale-[0.985]"
+      className="group relative flex shrink-0 items-center gap-1.5 px-4 py-2 font-medium text-on-surface transition-colors duration-250 ease-out-quart hover:text-oxley-300 hover:duration-150 focus-visible:text-oxley-300 active:duration-0"
     >
       <CornerBrackets className="text-[#cccccc] transition-[inset,color] duration-250 ease-out-quart group-hover:text-oxley-300 group-hover:duration-150 group-focus-visible:text-oxley-300 group-active:duration-0 motion-safe:group-hover:inset-[3.5px] motion-safe:group-focus-visible:inset-[3.5px] motion-safe:group-active:inset-[5px]" />
       Contact
