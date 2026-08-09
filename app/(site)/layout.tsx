@@ -16,10 +16,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      id="top"
-      className="mx-auto flex min-h-screen w-full max-w-[1920px] flex-col gap-14 px-4 py-4 sm:px-8 lg:gap-24"
-    >
+    <div className="mx-auto flex min-h-screen w-full max-w-[1920px] flex-col gap-14 px-4 py-4 sm:px-8 lg:gap-24">
       <TopNav />
       <main className="min-w-0 flex-1">{children}</main>
       <Footer />
