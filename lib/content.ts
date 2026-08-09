@@ -146,6 +146,8 @@ export type FeedProject = {
   slug: string;
   title: string;
   tags: string[];
+  /** The bracketed discipline in the feed header, e.g. "[ Product Design ]". */
+  services?: string;
   href: string;
   media: FeedMedia[];
 };
@@ -236,6 +238,7 @@ export function getWorkFeed(): FeedProject[] {
         slug: item.slug,
         title: item.title,
         tags: item.tags,
+        services: item.services ?? item.tags[0],
         href: workHref(item),
         media,
       };

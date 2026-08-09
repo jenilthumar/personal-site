@@ -9,11 +9,15 @@ export type NavLink = {
 };
 
 export const site = {
-  /** Shown top-left. The ® is rendered as a superscript mark by the Sidebar. */
-  name: "Jenil HT",
+  /** Shown top-left. The ® is rendered as a superscript mark by the Wordmark. */
+  name: "Jenil H.T",
   registered: true,
 
   bio: "A product and visual designer in Surat. I care about how things look, feel, and behave, and I keep them clean and functional more than loud.",
+
+  /** The opening line on the home page, set large. Third person, unlike the bio. */
+  statement:
+    "Jenil Thummar is a product and visual designer living in Surat. He cares about how things look, feel, and behave, and he loves to keep them clean and functional while balancing strong aesthetics.",
 
   /** "Currently designing at …" row. */
   current: {
