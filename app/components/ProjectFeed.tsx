@@ -225,39 +225,47 @@ function ProjectSection({
   eager: boolean;
 }) {
   return (
-    <section aria-labelledby={`${project.slug}-title`} className="flex flex-col gap-6">
+    <section aria-labelledby={`${project.slug}-title`}>
+      {/* One link over the header and the media both, so the work itself is
+          what you click — the header alone was a small target next to five
+          large images that looked clickable and weren't. Hovering anywhere in
+          the project lights the header, which is what tells you the images are
+          part of the same target. */}
       <Link
         href={project.href}
-        className="group flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]"
+        className="group/project flex flex-col gap-6 transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
       >
-        <h2 id={`${project.slug}-title`} className="flex min-w-0 items-center gap-4">
-          <span className="truncate font-medium text-on-surface">{project.title}</span>
-          {project.services && (
-            <span
-              className="hidden shrink-0 text-oxley-700 transition-colors group-hover:text-on-surface sm:inline"
-              style={{ fontFeatureSettings: '"case" 1' }}
-            >
-              [ {project.services} ]
-            </span>
-          )}
-        </h2>
+        <span className="flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
+          <h2 id={`${project.slug}-title`} className="flex min-w-0 items-center gap-4">
+            <span className="truncate font-medium text-on-surface">{project.title}</span>
+            {project.services && (
+              <span
+                className="hidden shrink-0 text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline"
+                style={{ fontFeatureSettings: '"case" 1' }}
+              >
+                [ {project.services} ]
+              </span>
+            )}
+          </h2>
 
-        <span className="flex shrink-0 items-center gap-1 text-on-surface transition-colors group-hover:text-oxley-300">
-          View project
-          <ChevronMark />
+          <span className="flex shrink-0 items-center gap-1 text-on-surface transition-colors group-hover/project:text-oxley-300">
+            View project
+            {/* Nudges along in the same two pixel steps as the nav glyphs. */}
+            <ChevronMark className="transition-[translate] duration-150 ease-[steps(2,jump-start)] motion-safe:group-hover/project:translate-x-0.5" />
+          </span>
         </span>
-      </Link>
 
-      <div className="flex flex-col gap-2">
-        {project.media.map((block, index) => (
-          <Row
-            key={index}
-            block={block}
-            eager={eager && index === 0}
-            phone={index < ROWS_BELOW_MD}
-          />
-        ))}
-      </div>
+        <div className="flex flex-col gap-2">
+          {project.media.map((block, index) => (
+            <Row
+              key={index}
+              block={block}
+              eager={eager && index === 0}
+              phone={index < ROWS_BELOW_MD}
+            />
+          ))}
+        </div>
+      </Link>
     </section>
   );
 }
