@@ -120,6 +120,15 @@ h2 {
   }
 }
 
+/* In-page anchors (the footer's back-to-top) glide rather than jump. Reduced
+   motion keeps the jump — a full-page scroll is exactly the kind of travel
+   that setting is asking us not to do. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* <details> height eases open/closed where ::details-content is supported;
    elsewhere (and under reduced motion) it snaps exactly as before. */
 :root {

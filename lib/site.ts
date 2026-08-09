@@ -30,6 +30,9 @@ export const site = {
   /** Tenure line, styled in the dimmed token. */
   dateRange: "May[25] ⎯ Present",
 
+  /** Shown in the footer, beside the year. */
+  location: "Surat, India",
+
   /** Bottom-pinned footer navigation. */
   footerNav: [
     { label: "About", href: "/about" },
