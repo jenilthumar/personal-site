@@ -6,9 +6,20 @@ import { IMAGE_QUALITY, mediaUrl, PHOTO_QUALITY } from "@/lib/media";
 import { Tags } from "./Tags";
 
 /**
- * A single work entry: a 16:9 cover (full-bleed image, or an on-brand
- * placeholder until a real cover is added) above a title / tags meta row.
- * The whole card links to the case study.
+ * A single work entry: a cover (full-bleed image, or an on-brand placeholder
+ * until a real cover is added) above a title / tags meta row. The whole card
+ * links to the case study.
+ *
+ * The frame follows the category, because the two kinds of cover are cut
+ * differently. A project's is a composed 2.10:1 piece — the same file the home
+ * grid and the case-study hero show — and a 16:9 box takes 15% off its sides,
+ * which on a cover built around a wordmark cuts the word in half. Photography
+ * covers are photographs at their own ratios, and 16:9 is already as much crop
+ * as they should take.
+ *
+ * The ratio is written out rather than shared from a constant: Tailwind reads
+ * class names as literal strings and can't follow one through a variable. Its
+ * two other homes are WorkSection and ProjectHero.
  */
 export function WorkCard({
   item,
@@ -22,7 +33,11 @@ export function WorkCard({
       href={workHref(item)}
       className="group block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
     >
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-oxley-700/10">
+      <div
+        className={`relative w-full overflow-hidden bg-oxley-700/10 ${
+          item.category === "project" ? "aspect-[21/10]" : "aspect-[16/9]"
+        }`}
+      >
         {item.cover ? (
           <Image
             src={mediaUrl(item.cover)}

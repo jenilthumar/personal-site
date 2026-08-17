@@ -26,7 +26,7 @@ export function PhotographyView({
               {item.title}
             </h1>
             {count ? (
-              <p className="text-base leading-[1.3] text-oxley-700 tabular-nums">
+              <p className="font-mono text-base leading-[1.3] text-oxley-700">
                 [{count}]
               </p>
             ) : null}

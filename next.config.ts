@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
   // 90 is the site-wide floor, 100 for photography (see lib/media.ts). The
   // optimizer 400s on any quality not listed here.
   images: { remotePatterns, qualities: [90, 100] },
+  // React's <ViewTransition> pairs the home feed's cover with the case study's
+  // hero across the navigation. See app/globals.css for the timing.
+  experimental: { viewTransition: true },
 };
 
 const withMDX = createMDX({
