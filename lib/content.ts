@@ -158,13 +158,22 @@ export function workHref(item: Pick<WorkItem, "slug" | "category">): string {
 // ── Home feed ────────────────────────────────────────────────────────────
 // The vertical-scroll home view: every project's media, in display order.
 
-export type FeedImage = { src: string; alt: string; aspect: string };
+export type FeedImage = {
+  src: string;
+  alt: string;
+  aspect: string;
+  /** This cell is also the case study's hero, so the two can be paired across
+   *  the navigation. Set on at most one cell per project. */
+  hero?: boolean;
+};
+
+/** A single cell: one image or one video, never a row of them. */
+export type FeedCell =
+  | ({ kind: "image" } & FeedImage)
+  | ({ kind: "video"; poster?: string } & FeedImage);
 
 /** One block in the feed: a full-width image or video, or a side-by-side row. */
-export type FeedMedia =
-  | ({ kind: "image" } & FeedImage)
-  | ({ kind: "video"; poster?: string } & FeedImage)
-  | { kind: "row"; images: FeedImage[] };
+export type FeedMedia = FeedCell | { kind: "row"; images: FeedImage[] };
 
 export type FeedProject = {
   slug: string;
@@ -201,7 +210,13 @@ function parseBodyMedia(body: string): FeedMedia[] {
       const images = [...block.matchAll(/<Img\b[^>]*\/>/g)].flatMap(([img]) => {
         const attrs = tagAttrs(img);
         return attrs.src
-          ? [{ src: attrs.src, alt: attrs.alt ?? "", aspect: attrs.aspect ?? "3/2" }]
+          ? [
+              {
+                src: attrs.src,
+                alt: attrs.alt ?? "",
+                aspect: attrs.aspect ?? "3/2",
+              },
+            ]
           : [];
       });
       if (images.length) media.push({ kind: "row", images });
@@ -238,7 +253,10 @@ type KnownMedia = FeedImage & { kind: "image" | "video"; poster?: string };
  * image the short way. First writer wins, so the hero's 16:9 isn't displaced
  * by a body copy of the same file.
  */
-function knownMedia(item: WorkItem, body: FeedMedia[]): Map<string, KnownMedia> {
+function knownMedia(
+  item: WorkItem,
+  body: FeedMedia[],
+): Map<string, KnownMedia> {
   const index = new Map<string, KnownMedia>();
   const add = (entry: KnownMedia) => {
     for (const key of [entry.src, stem(entry.src)]) {
@@ -300,7 +318,13 @@ function resolveRow(
   if (cells.length === 1) {
     const [only] = cells;
     return only.kind === "video"
-      ? { kind: "video", src: only.src, poster: only.poster, alt: only.alt, aspect: only.aspect }
+      ? {
+          kind: "video",
+          src: only.src,
+          poster: only.poster,
+          alt: only.alt,
+          aspect: only.aspect,
+        }
       : { kind: "image", src: only.src, alt: only.alt, aspect: only.aspect };
   }
 
@@ -313,6 +337,30 @@ function resolveRow(
       aspect,
     })),
   };
+}
+
+/**
+ * Mark the one feed cell that is also the case study's hero, so the two ends of
+ * the navigation can be paired. First match wins: two elements sharing a
+ * view-transition-name aborts the transition outright, and nothing stops a
+ * project from naming the same file in two rows.
+ */
+function markHeroCell(media: FeedMedia[], heroSrc?: string) {
+  if (!heroSrc) return;
+  const target = stem(heroSrc);
+
+  for (const block of media) {
+    if (block.kind === "row") {
+      const match = block.images.find((image) => stem(image.src) === target);
+      if (match) {
+        match.hero = true;
+        return;
+      }
+    } else if (block.kind === "image" && stem(block.src) === target) {
+      block.hero = true;
+      return;
+    }
+  }
 }
 
 /**
@@ -351,7 +399,12 @@ export function getWorkFeed(): FeedProject[] {
             aspect: "16/9",
           });
         } else if (heroImage) {
-          media.push({ kind: "image", src: heroImage, alt: item.title, aspect: "16/9" });
+          media.push({
+            kind: "image",
+            src: heroImage,
+            alt: item.title,
+            aspect: "16/9",
+          });
         }
 
         for (const block of body) {
@@ -360,6 +413,10 @@ export function getWorkFeed(): FeedProject[] {
           media.push(block);
         }
       }
+
+      // A looping hero video has no still to morph into, so those projects
+      // sit the pairing out.
+      if (!item.heroVideo) markHeroCell(media, item.hero ?? item.cover);
 
       return {
         slug: item.slug,
