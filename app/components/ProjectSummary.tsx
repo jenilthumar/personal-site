@@ -56,7 +56,10 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
         <dl className="grid grid-cols-2 gap-x-12 gap-y-5 lg:w-[416px] lg:shrink-0">
           {details.map((detail) => (
             <div key={detail.label} className="flex min-w-0 flex-col gap-2">
-              <dt className="text-base leading-[1.3] text-oxley-700">
+              {/* Field names take the mono, values keep Inter: the left
+                  column is a form of labelling, the right is a client's name or
+                  a service written out. */}
+              <dt className="font-mono text-base leading-[1.3] text-oxley-700">
                 {detail.label}
               </dt>
               <dd className="text-base leading-[1.3] break-words text-on-surface">

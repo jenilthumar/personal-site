@@ -73,6 +73,15 @@ function PhotoCell({
   title: string;
   onOpen: (index: number) => void;
 }) {
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // A cached image can finish decoding before React attaches onLoad, which
+  // would leave it stuck invisible — ask the DOM once on mount.
+  useEffect(() => {
+    if (imageRef.current?.complete) setLoaded(true);
+  }, []);
+
   const ratio = ratioValue(photo.aspect);
   // Every photo keeps its true ratio but is normalized to a shared visual
   // weight: its longest side fills the column. Landscapes go full column width
@@ -82,7 +91,7 @@ function PhotoCell({
 
   return (
     <li className="group flex flex-col gap-2">
-      <span className="text-xs tracking-wide text-oxley-700 tabular-nums transition-colors group-hover:text-on-surface">
+      <span className="font-mono text-xs tracking-normal text-oxley-700 transition-colors group-hover:text-on-surface">
         {String(index + 1).padStart(2, "0")}
       </span>
       <button
@@ -94,12 +103,18 @@ function PhotoCell({
       >
         {photo.src ? (
           <Image
+            ref={imageRef}
             src={mediaUrl(photo.src)}
             alt={photo.caption ?? title}
             fill
             sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
             quality={PHOTO_QUALITY}
-            className="object-cover"
+            onLoad={() => setLoaded(true)}
+            // Lazy photos otherwise blink out of the placeholder one frame to
+            // the next, which is a hard edge against black.
+            className={`object-cover transition-opacity duration-300 ease-out-quart ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
           />
         ) : (
           <span className="block h-full w-full bg-linear-to-br from-oxley-700/25 via-oxley-700/10 to-transparent" />
@@ -115,7 +130,7 @@ function StoryText({ block }: { block: TextBlock }) {
     <div className="px-6">
       <div className="flex max-w-[640px] flex-col gap-4">
         {block.eyebrow ? (
-          <p className="text-sm tracking-wide text-oxley-700 uppercase">
+          <p className="font-mono text-sm tracking-wide text-oxley-700 uppercase">
             {block.eyebrow}
           </p>
         ) : null}
@@ -135,6 +150,15 @@ function FeaturePhoto({
   title: string;
   onOpen: (index: number) => void;
 }) {
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // A cached image can finish decoding before React attaches onLoad, which
+  // would leave it stuck invisible — ask the DOM once on mount.
+  useEffect(() => {
+    if (imageRef.current?.complete) setLoaded(true);
+  }, []);
+
   return (
     <figure className="flex flex-col items-center gap-3 px-6">
       <button
@@ -145,20 +169,24 @@ function FeaturePhoto({
       >
         {photo.src ? (
           <Image
+            ref={imageRef}
             src={mediaUrl(photo.src)}
             alt={photo.caption ?? title}
             width={1600}
             height={Math.round(1600 / ratioValue(photo.aspect))}
             sizes="(min-width: 1024px) 70vw, 100vw"
             quality={PHOTO_QUALITY}
-            className="h-auto max-h-[70vh] w-auto max-w-full object-contain"
+            onLoad={() => setLoaded(true)}
+            className={`h-auto max-h-[70vh] w-auto max-w-full object-contain transition-opacity duration-300 ease-out-quart ${
+              loaded ? "opacity-100" : "opacity-0"
+            }`}
           />
         ) : (
           <div className="aspect-[3/2] w-[70vw] bg-oxley-700/15" />
         )}
       </button>
       <figcaption className="flex max-w-[640px] flex-col items-center gap-1 text-center">
-        <p className="text-xs tracking-wide text-oxley-700 tabular-nums">
+        <p className="font-mono text-xs tracking-normal text-oxley-700">
           {String(index + 1).padStart(2, "0")}
         </p>
         {photo.caption ? (
@@ -190,7 +218,9 @@ export function PhotoGallery({
   const [closing, setClosing] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Closing mirrors the entrance fade; the dialog unmounts once it finishes.
+  // Closing mirrors the entrance; the backdrop's fade-out is what unmounts the
+  // dialog. The figure's own zoom-out bubbles an animationend here too, which
+  // is why finishClose checks the name before acting on it.
   const close = () => setClosing(true);
   const finishClose = (e: AnimationEvent<HTMLDivElement>) => {
     if (e.animationName !== "fade-out") return;
@@ -338,7 +368,9 @@ export function PhotoGallery({
 
           <figure
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-full max-w-full flex-col items-center gap-3"
+            className={`flex max-h-full max-w-full flex-col items-center gap-3 ${
+              closing ? "animate-zoom-out" : "animate-zoom-in"
+            }`}
           >
             {current.src ? (
               <Image
@@ -348,12 +380,12 @@ export function PhotoGallery({
                 height={Math.round(1600 / ratioValue(current.aspect))}
                 sizes="92vw"
                 quality={PHOTO_QUALITY}
-                className="h-auto max-h-[82vh] w-auto max-w-[92vw] animate-fade-in object-contain"
+                className="h-auto max-h-[82vh] w-auto max-w-[92vw] object-contain"
               />
             ) : (
               <div className="aspect-[3/2] w-[60vw] bg-oxley-700/15" />
             )}
-            <figcaption className="text-center text-sm text-oxley-700 tabular-nums">
+            <figcaption className="text-center font-mono text-sm text-oxley-700">
               {active + 1} / {flat.length}
               {current.caption ? (
                 <span className="text-on-surface"> · {current.caption}</span>

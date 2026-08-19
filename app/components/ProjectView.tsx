@@ -27,6 +27,7 @@ export function ProjectView({
         hero={item.hero}
         heroVideo={item.heroVideo}
         title={item.title}
+        slug={item.slug}
       />
 
       <div className="px-6">

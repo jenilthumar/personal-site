@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { mediaUrl } from "@/lib/media";
 
 /**
- * Looping video hero — fills the 16:9 ProjectHero frame in place of the still
+ * Looping video hero — fills the 2.10:1 ProjectHero frame in place of the still
  * image. Muted and silent, the moving counterpart to the static cover. Poster
  * (the still hero image) shows before playback and stays put for
  * prefers-reduced-motion visitors, who never see the loop. See CaseVideo for

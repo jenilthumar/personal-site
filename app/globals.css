@@ -1,41 +1,201 @@
 @import "tailwindcss";
 
-/* ── Design tokens: neutral scale anchored on #e3e3e3 (primary), on black ──
-   One grayscale ramp. #e3e3e3 is the primary foreground; white lifts headings
-   above it, a mid-gray drops secondary text back. Hairlines and placeholder
-   fills derive from the muted token via opacity (see bg-oxley-700/10 and
+/* ── Design tokens: near-white primary on black, with a cool muted ────────
+   #e6e6e6 is the primary foreground; white lifts headings above it, and the
+   muted token drops secondary text back — it carries a slight blue cast
+   (#767d93) rather than sitting on the gray axis, which is what keeps the
+   bracketed labels and hairlines from reading as dead gray. Hairlines and
+   placeholder fills derive from it via opacity (see bg-oxley-700/10 and
    border-oxley-700/40 in the markup). Token names are historical (oxley = the
-   old sage green) — the values are now plain neutrals. */
+   old sage green).
+
+   Dark is the default rather than the override: it's the design the site was
+   drawn in, so it's what a browser that reports no preference should get, and
+   every comment in this file describes it. Light is the branch below.
+
+   Nothing outside this file names a colour — not one hex anywhere in the
+   components — so the eight declarations below are the whole of both themes,
+   plus the six flare colours that one animation borrows. */
 :root {
-  --surface: #000000; /* page background — solid black            */
-  --oxley-300: #ffffff; /* emphasis: name, titles, footer nav, active */
-  --on-surface: #e3e3e3; /* primary: body copy, links, index         */
-  --oxley-700: #8f8f8f; /* muted: date range, secondary tags, borders */
+  /* Both palettes, each value written once. The active four below are
+     indirections onto these, so a theme switch remaps four variables and no
+     colour is ever restated in two places to drift apart. */
+  --dark-surface: #000000; /* page background — solid black            */
+  --dark-oxley-300: #ffffff; /* emphasis: name, titles, footer nav, active */
+  --dark-on-surface: #e6e6e6; /* primary: body copy, links, index         */
+  --dark-oxley-700: #767d93; /* muted: bracketed labels, secondary tags, borders */
+
+  --light-surface: #ffffff;
+  --light-oxley-300: #000000;
+  --light-on-surface: #1d1d1d;
+  --light-oxley-700: #676d82;
+
+  /* Flare colours — the six hues the statement's word animation cycles through
+     (see StatementFlare.tsx). These are here to be a pleasure and nothing
+     else. They aren't drawn from the work, they don't encode anything, and
+     nobody has to decode them: a sentence about caring how things look briefly
+     does something nice to look at.
+
+     Ordered so neighbouring words never land on neighbouring hues — pink,
+     green, orange, blue — because a phrase that walks the spectrum in order
+     reads as one gradient sweeping through. The delight is in the scatter.
+
+     Two renderings rather than one set reused. On black they can be candy:
+     bright, saturated, no cost to legibility. On white that same brightness is
+     unreadable — a happy yellow lands at 1.8:1 — so light mode gets jewel-toned
+     cousins instead, deep and every bit as saturated. Both sets clear 4.5:1
+     against their background, which is the full-text bar and well past the 3:1
+     this size actually needs, so the words stay readable at every frame.
+
+     Equal weight is deliberately not a goal here; that was the quieter version
+     of this animation. Saturated hues can't share a luminance, and the
+     unevenness earns its keep — it's what stops six colours reading as one
+     mechanical cycle.
+
+     Saturation is the one thing they do hold in common, 0.58 to 0.70 across
+     the set. The dark violet was originally a pale #c79bff at 0.39 and it was
+     the odd one out: against grey-blue hairlines it read as another grey, and
+     in the line field's ripple it simply never registered as a colour while the
+     other five did. Keep a new hue inside that band. */
+  --dark-flare-1: #ff6ab0; /* pink   */
+  --dark-flare-2: #54e07f; /* green  */
+  --dark-flare-3: #ffa04d; /* orange */
+  --dark-flare-4: #69b4ff; /* blue   */
+  --dark-flare-5: #ffe14d; /* yellow */
+  --dark-flare-6: #ab6bff; /* violet */
+
+  --light-flare-1: #c2185b;
+  --light-flare-2: #15803d;
+  --light-flare-3: #b4460b;
+  --light-flare-4: #1d4ed8;
+  --light-flare-5: #8a6300;
+  --light-flare-6: #7527d4;
+
+  /* Active — dark unless one of the two rules below says otherwise. */
+  --surface: var(--dark-surface);
+  --oxley-300: var(--dark-oxley-300);
+  --on-surface: var(--dark-on-surface);
+  --oxley-700: var(--dark-oxley-700);
+  --flare-1: var(--dark-flare-1);
+  --flare-2: var(--dark-flare-2);
+  --flare-3: var(--dark-flare-3);
+  --flare-4: var(--dark-flare-4);
+  --flare-5: var(--dark-flare-5);
+  --flare-6: var(--dark-flare-6);
+  color-scheme: dark;
+}
+
+/* ── Light ────────────────────────────────────────────────────────────────
+   Matched by contrast ratio rather than inverted, so each role keeps the
+   weight it carries on black:
+
+     on-surface   #e6e6e6 on black = 16.83:1  ->  #1d1d1d on white = 16.86:1
+     oxley-300    #ffffff on black = 21.00:1  ->  #000000 on white = 21.00:1
+     oxley-700    #767d93 on black =  5.13:1  ->  #676d82 on white =  5.14:1
+
+   The muted token is darkened along its own hue rather than re-picked, so it
+   holds the same 225.5° blue cast in both themes and the hairlines stay cool
+   instead of falling back to dead gray.
+
+   Two rules, in this order, because the toggle has three states and only two
+   palettes. The system preference is honoured unless the reader has explicitly
+   asked for dark; an explicit light overrides the system on either side. The
+   two selectors carry equal specificity (0,2,0), so source order is what makes
+   the explicit choice win — don't reorder them.
+
+   `data-theme` is set on <html> by the inline script in the root layout before
+   first paint, and by ThemeToggle thereafter. Absent means "follow the system",
+   which is why it's an absence rather than data-theme="system": nothing has to
+   run for the default to be right. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --surface: var(--light-surface);
+    --oxley-300: var(--light-oxley-300);
+    --on-surface: var(--light-on-surface);
+    --oxley-700: var(--light-oxley-700);
+    --flare-1: var(--light-flare-1);
+    --flare-2: var(--light-flare-2);
+    --flare-3: var(--light-flare-3);
+    --flare-4: var(--light-flare-4);
+    --flare-5: var(--light-flare-5);
+    --flare-6: var(--light-flare-6);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --surface: var(--light-surface);
+  --oxley-300: var(--light-oxley-300);
+  --on-surface: var(--light-on-surface);
+  --oxley-700: var(--light-oxley-700);
+  --flare-1: var(--light-flare-1);
+  --flare-2: var(--light-flare-2);
+  --flare-3: var(--light-flare-3);
+  --flare-4: var(--light-flare-4);
+  --flare-5: var(--light-flare-5);
+  --flare-6: var(--light-flare-6);
+  color-scheme: light;
 }
 
 /* Expose tokens as Tailwind v4 utilities: bg-surface, text-oxley-300,
-   text-on-surface, text-oxley-700, font-sans. */
+   text-on-surface, text-oxley-700, font-sans, font-mono. */
 @theme inline {
   --color-surface: var(--surface);
   --color-oxley-300: var(--oxley-300);
   --color-on-surface: var(--on-surface);
   --color-oxley-700: var(--oxley-700);
 
-  --font-sans: var(--font-authentic-sans);
+  --font-sans: var(--font-inter);
+  /* Ioskeley, declared in app/fonts/mono.ts and carried on <html> from the root
+     layout. Overriding Tailwind's stock --font-mono means `font-mono` is the
+     whole API — no second utility to remember. The variable already ends in a
+     real mono stack, so the fallback is covered. */
+  --font-mono: var(--font-ioskeley);
 }
 
-/* Dark-only design — tell the UA to render form controls / scrollbars dark. */
+/* ── Typeface: Inter, set up the way rsms.me/inter prescribes ───────────────
+   'liga' and 'calt' are opt-in in Chrome, so they're switched on explicitly.
+   Browsers with variable-font support get InterVariable — one file carrying
+   every weight plus the opsz optical-size axis, which is why there's no
+   separate InterDisplay face. The family lives in --font-inter so Tailwind's
+   font-sans utility follows the same swap. */
 :root {
-  color-scheme: dark;
+  --font-inter: Inter, sans-serif;
+  font-family: var(--font-inter);
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1;
+}
+@supports (font-variation-settings: normal) {
+  :root {
+    --font-inter: InterVariable, sans-serif;
+  }
 }
 
 body {
   background-color: var(--surface);
   color: var(--on-surface);
-  font-family: var(--font-authentic-sans), ui-sans-serif, system-ui, sans-serif;
+  /* The home page's line field breaks out of the shell to the window edges
+     with `calc(50% - 50vw)`, and `vw` counts the scrollbar. Where the scrollbar
+     is a classic one that takes up space — Windows, Linux, and macOS set to
+     always show them — that puts the drawing a few pixels wider than the
+     content area and hands the page a horizontal scrollbar it has no use for.
+
+     `clip` rather than `hidden` on purpose: `hidden` would make this a scroll
+     container, which silently disables `position: sticky` anywhere below it.
+     `clip` just trims the overflow. */
+  overflow-x: clip;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Headings render at the display end of the optical-size axis: tighter
+   spacing and finer joints than the text-optimised default. */
+h1,
+h2 {
+  font-variation-settings: "opsz" 32;
 }
 
 ::selection {
@@ -51,6 +211,9 @@ body {
   --animate-fade-in: fade-in 200ms cubic-bezier(0.25, 1, 0.5, 1);
   --animate-fade-out: fade-out 150ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
   --animate-rise-in: rise-in 240ms cubic-bezier(0.25, 1, 0.5, 1);
+  --animate-zoom-in: zoom-in 200ms cubic-bezier(0.25, 1, 0.5, 1);
+  --animate-zoom-out: zoom-out 150ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  --animate-flare: flare 1.6s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 /* Lightbox enter/exit — the same fade both ways, so closing mirrors opening. */
@@ -68,6 +231,74 @@ body {
   }
   to {
     opacity: 0;
+  }
+}
+
+/* Lightbox figure: a small scale under the backdrop's fade, so the photo
+   arrives rather than materialising at full size. The exit has to finish with
+   the backdrop's 150ms — that animation is what unmounts the dialog — and it
+   travels less than the entrance because it has less time to do it in. */
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes zoom-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes zoom-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes zoom-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/* Statement word flare: the ink takes an accent hue and gives it back.
+   192ms to arrive, 208ms held, then 1.2s to fade out — the asymmetry is the
+   whole effect. Reverse it and a word looks like it blinked; this way it looks
+   like something lit and cooled. Only the hue travels: every accent is solved
+   to the ink's luminance band, so the word never brightens or dims, which is
+   what keeps this off the eye's radar while it's reading.
+
+   Both ends of the animation state the ink colour explicitly. Not for the sake
+   of a transition — a `transition` on `color` cannot catch a removed animation,
+   which is measured and is exactly why StatementFlare latches the run in state
+   rather than leaning on `group-hover` — but so the last keyframe lands on the
+   value the word reverts to, and dropping the animation at the end is invisible. */
+@keyframes flare {
+  0% {
+    color: var(--on-surface);
+  }
+  12%,
+  25% {
+    color: var(--flare);
+  }
+  100% {
+    color: var(--on-surface);
   }
 }
 
@@ -109,5 +340,35 @@ body {
   }
   details[open]::details-content {
     height: auto;
+  }
+}
+
+/* ── Shared element across the navigation ────────────────────────────────────
+   The home feed's cover and the case study's hero are usually the same file,
+   and nothing on screen said so — the cover vanished and a hero appeared. Both
+   ends carry the same view-transition-name (see WorkSection / ProjectHero), so
+   the browser moves one element between the two positions.
+
+   The root pair is switched off deliberately. Enabling view transitions gives
+   every navigation a full-page cross-fade for free, which is a page-load
+   animation on the most-used route on the site; the hero travels, the rest of
+   the page just swaps. */
+::view-transition-group(*.morph) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Reduced motion drops the travel, not the connection: the hero lands in its
+   new position immediately and the two snapshots cross-fade in place. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*.morph) {
+    animation-duration: 0s;
+  }
+  ::view-transition-image-pair(*.morph) {
+    animation-duration: 150ms;
   }
 }

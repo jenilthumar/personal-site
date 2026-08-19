@@ -17,6 +17,11 @@ function youtubeId(url: string): string | null {
  * thumbnail as a poster with a play button. Clicking swaps in the embedded
  * player, so YouTube's scripts only load if someone actually presses play.
  * Renders nothing if the url isn't a recognizable YouTube link.
+ *
+ * The poster stays mounted underneath for the whole handoff. An embed renders
+ * black until YouTube boots, which is half a second of nothing where the film
+ * used to be; holding the title card and fading the player in over it means the
+ * frame never empties.
  */
 export function FilmSpotlight({
   url,
@@ -29,6 +34,7 @@ export function FilmSpotlight({
 }) {
   const id = youtubeId(url);
   const [playing, setPlaying] = useState(false);
+  const [ready, setReady] = useState(false);
   if (!id) return null;
 
   const poster = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
@@ -36,35 +42,30 @@ export function FilmSpotlight({
   return (
     <section className="px-6">
       <div className="mx-auto flex max-w-[1120px] flex-col gap-3">
-        <p className="text-sm tracking-wide text-oxley-700 uppercase">
+        <p className="font-mono text-sm tracking-wide text-oxley-700 uppercase">
           The film
         </p>
         <div className="relative aspect-video w-full overflow-hidden bg-oxley-700/10">
-          {playing ? (
-            <iframe
-              src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
-              title={`${title} — film`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
-          ) : (
+          <Image
+            src={poster}
+            alt={`${title} film poster`}
+            fill
+            sizes="(min-width: 1120px) 1120px, 100vw"
+            // A YouTube video still (already lossy) — the site floor, not
+            // the photography 100; re-encoding higher would only add bytes.
+            quality={IMAGE_QUALITY}
+            className="object-cover"
+          />
+
+          {/* The scrim and the chip belong to the press target, so they leave
+              with it. The poster underneath is what carries the continuity. */}
+          {!playing && (
             <button
               type="button"
               onClick={() => setPlaying(true)}
               aria-label={`Play the film: ${title}`}
               className="group absolute inset-0 h-full w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300"
             >
-              <Image
-                src={poster}
-                alt={`${title} film poster`}
-                fill
-                sizes="(min-width: 1120px) 1120px, 100vw"
-                // A YouTube video still (already lossy) — the site floor, not
-                // the photography 100; re-encoding higher would only add bytes.
-                quality={IMAGE_QUALITY}
-                className="object-cover"
-              />
               <span className="absolute inset-0 bg-surface/20 transition-colors duration-300 group-hover:bg-surface/5" />
               <span className="absolute top-1/2 left-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface/60 backdrop-blur-sm transition-transform duration-200 ease-out-quart group-active:scale-95 group-active:duration-0 motion-safe:group-hover:scale-105 sm:size-20">
                 <svg
@@ -78,6 +79,19 @@ export function FilmSpotlight({
                 </svg>
               </span>
             </button>
+          )}
+
+          {playing && (
+            <iframe
+              src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
+              title={`${title} — film`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              onLoad={() => setReady(true)}
+              className={`absolute inset-0 h-full w-full transition-opacity duration-200 ease-out-quart ${
+                ready ? "opacity-100" : "opacity-0"
+              }`}
+            />
           )}
         </div>
         {note && (
