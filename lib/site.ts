@@ -56,11 +56,20 @@ export const site = {
     { label: "Contact", href: "/contact" },
   ] satisfies NavLink[],
 
-  /** Used by the Contact page / links. */
+  /** Used by the Contact page / links. Real profiles, not service homepages —
+      the Contact page prints the address itself beside each label, so a bare
+      x.com would read as a link and land the reader nowhere. */
   social: [
     { label: "Email", href: "mailto:jenilthummar3108@gmail.com" },
-    { label: "Twitter / X", href: "https://x.com/" },
-    { label: "Read.cv", href: "https://read.cv/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/jenil-thummar/" },
+    { label: "GitHub", href: "https://github.com/jenilthumar" },
+    { label: "Instagram", href: "https://www.instagram.com/jenil.thumar" },
+    /* The share link carries an ?si= token that identifies the sender; the
+       playlist resolves fine without it, and it would print in the address
+       column. */
+    {
+      label: "Spotify",
+      href: "https://open.spotify.com/playlist/22TOUQX7WiMT2IU0i2Fafg",
+    },
   ] satisfies NavLink[],
 };
