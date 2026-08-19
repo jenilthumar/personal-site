@@ -20,8 +20,12 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
   const description = item.description ?? item.summary;
 
   return (
+    // The two halves reveal separately rather than the section as one: both
+    // are on screen when a case study opens, so they cascade 0/1 under the
+    // hero — which has no reveal of its own; the morph (or, on a hard load,
+    // simply being the LCP) is its entrance.
     <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-      <div className="flex max-w-[480px] flex-col gap-4">
+      <div className="reveal flex max-w-[480px] flex-col gap-4">
         <h1 className="text-[32px] leading-[1.3] text-on-surface">{item.title}</h1>
         {description && (
           <p className="text-base leading-[1.3] text-on-surface">{description}</p>
@@ -53,7 +57,7 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
       </div>
 
       {details.length > 0 && (
-        <dl className="grid grid-cols-2 gap-x-12 gap-y-5 lg:w-[416px] lg:shrink-0">
+        <dl className="reveal grid grid-cols-2 gap-x-12 gap-y-5 lg:w-[416px] lg:shrink-0">
           {details.map((detail) => (
             <div key={detail.label} className="flex min-w-0 flex-col gap-2">
               {/* Field names take the mono, values keep Inter: the left

@@ -90,7 +90,11 @@ function PhotoCell({
   const widthPct = `${Math.min(1, ratio) * 100}%`;
 
   return (
-    <li className="group flex flex-col gap-2">
+    // Each cell reveals on its own: a viewport row of the contact sheet deals
+    // itself out left to right (the observer staggers whatever arrives
+    // together), and the reveal composes with the image's own load fade —
+    // one moves the frame, the other fills it.
+    <li className="reveal group flex flex-col gap-2">
       <span className="font-mono text-xs tracking-normal text-oxley-700 transition-colors group-hover:text-on-surface">
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -127,7 +131,7 @@ function PhotoCell({
 /** A narrative beat between image groups: a quiet, left-aligned prose block. */
 function StoryText({ block }: { block: TextBlock }) {
   return (
-    <div className="px-6">
+    <div className="reveal px-6">
       <div className="flex max-w-[640px] flex-col gap-4">
         {block.eyebrow ? (
           <p className="font-mono text-sm tracking-wide text-oxley-700 uppercase">
@@ -160,7 +164,7 @@ function FeaturePhoto({
   }, []);
 
   return (
-    <figure className="flex flex-col items-center gap-3 px-6">
+    <figure className="reveal flex flex-col items-center gap-3 px-6">
       <button
         type="button"
         onClick={() => onOpen(index)}

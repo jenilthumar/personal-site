@@ -75,7 +75,11 @@ export default function Home() {
             tracking is the design's -2.4px in em so it holds at every size.
             InterVariable's optical size axis moves to its display end here via
             font-optical-sizing. */}
-        <div className="flex lg:min-h-0 lg:flex-1 lg:items-center">
+        {/* `reveal` rides the sizing box rather than the statement so the
+            sweep moves the line and the space it centres in as one thing —
+            and because opacity/transform touch no box arithmetic, the fold
+            calculation above doesn't know it's there. */}
+        <div className="reveal flex lg:min-h-0 lg:flex-1 lg:items-center">
           <Statement as="h1" flare={site.statementFlare}>
             {site.statement}
           </Statement>
@@ -99,7 +103,7 @@ export default function Home() {
             it would read as an image sitting in the column rather than as the
             page's own surface. The percentage resolves against the column and
             the vw against the window, so one expression covers both. */}
-        <LineField className="min-h-0 flex-1 lg:h-[clamp(150px,24svh,280px)] lg:flex-none [margin-inline:calc(50%_-_50vw)] [mask-image:linear-gradient(to_bottom,transparent,black_22%,black_100%)]" />
+        <LineField className="reveal min-h-0 flex-1 lg:h-[clamp(150px,24svh,280px)] lg:flex-none [margin-inline:calc(50%_-_50vw)] [mask-image:linear-gradient(to_bottom,transparent,black_22%,black_100%)]" />
       </div>
 
       {/* Both sections in full, newest first — the headers count what they

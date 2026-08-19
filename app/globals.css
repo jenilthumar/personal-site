@@ -204,16 +204,29 @@ h2 {
 }
 
 /* ── Motion ──────────────────────────────────────────────────────────────────
-   One house curve (fast start, gentle settle), opacity-first. Anything that
-   travels is gated behind prefers-reduced-motion; plain fades stay for all. */
+   Two curves, each with a jurisdiction. ease-out-quart (fast start, gentle
+   settle) is the house curve for everything the reader triggers — hovers,
+   presses, the lightbox — because a response should begin the instant it was
+   asked for. ease-in-out-quint drives the reveal sweep only: its wound-up
+   start would read as lag on a control, but a page performing its own
+   entrance is allowed a breath before it moves, and the deep settle is what
+   makes the sweep feel placed rather than tossed. Opacity-first throughout;
+   anything that travels is gated behind prefers-reduced-motion, plain fades
+   stay for all. */
 @theme inline {
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
   --animate-fade-in: fade-in 200ms cubic-bezier(0.25, 1, 0.5, 1);
   --animate-fade-out: fade-out 150ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
   --animate-rise-in: rise-in 240ms cubic-bezier(0.25, 1, 0.5, 1);
   --animate-zoom-in: zoom-in 200ms cubic-bezier(0.25, 1, 0.5, 1);
   --animate-zoom-out: zoom-out 150ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
   --animate-flare: flare 1.6s cubic-bezier(0.25, 1, 0.5, 1) both;
+  /* The masthead's once-per-load fade. Opacity only, no travel: MobileNav
+     keeps a position:fixed sheet inside this element, and a transform here
+     would adopt it as its containing block. It also lets the fade skip the
+     reduced-motion gate the way every plain fade in this file does. */
+  --animate-nav-in: fade-in 600ms cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 /* Lightbox enter/exit — the same fade both ways, so closing mirrors opening. */
@@ -340,6 +353,61 @@ h2 {
   }
   details[open]::details-content {
     height: auto;
+  }
+}
+
+/* ── Reveal ──────────────────────────────────────────────────────────────────
+   The page entrance: a block starts a step down and faded, and sweeps up into
+   place once it's on screen — the first screen right after mount, everything
+   below as the scroll reaches it. One mechanism for both, so a paragraph that
+   happens to sit on the fold isn't animated differently from one just under
+   it. Reveal.tsx observes every `.reveal` on the page and stamps data-visible
+   the first time it enters the viewport; blocks that arrive together stagger
+   80ms apart in visual order via --reveal-order. It fires once per element —
+   re-revealing on every scroll-by is an interface fighting its reader.
+
+   Two curves on the one move. Opacity rides the house ease-out-quart and is
+   mostly done by 250ms, so the content is readable long before it has
+   settled; the travel takes the full 800ms of ease-in-out-quint, which is
+   what gives the sweep its wind-up and glide. The travel is 24px — six times
+   the disclosure rise, an entrance rather than a flicker, but still inside
+   the block's own footprint.
+
+   The hidden state exists only where scripting is enabled: with JS off — or
+   in a browser too old for the scripting query — nothing is ever hidden, and
+   the page is simply the page. The same wager the theme script makes: the
+   default costs nothing when the enhancement can't run.
+
+   Morph-carrying media never takes this class. The home covers and the case
+   hero are paired across navigations by view-transition-name, and a pairing
+   that lands on an element mid-reveal captures it half-faded — the morph
+   flies into nothing. Same division of labour as the note below: the hero
+   travels, the rest of the page reveals. */
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+.reveal[data-visible] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 500ms cubic-bezier(0.25, 1, 0.5, 1),
+    transform 800ms cubic-bezier(0.83, 0, 0.17, 1);
+  transition-delay: calc(var(--reveal-order, 0) * 80ms);
+}
+/* Travel gone, fade kept — and kept quick: the stagger tightens too, so a
+   screenful of blocks doesn't spend a second assembling in slow motion.
+   Source order does the overriding here (same specificity as the rules
+   above), so this block stays below them. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+  }
+  .reveal[data-visible] {
+    transition: opacity 300ms cubic-bezier(0.25, 1, 0.5, 1);
+    transition-delay: calc(var(--reveal-order, 0) * 40ms);
   }
 }
 

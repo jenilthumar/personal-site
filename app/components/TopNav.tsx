@@ -24,7 +24,11 @@ export function TopNav() {
   const photography = getWorkByCategory("photography").map(toItem);
 
   return (
-    <header>
+    // The one entrance that plays per hard load rather than per navigation:
+    // the shell layout never remounts client-side, so this fade runs once and
+    // the masthead then holds still while pages sweep beneath it. Opacity
+    // only — the token's note in globals.css explains why it can't travel.
+    <header className="animate-nav-in">
       <MobileNav projects={projects} photography={photography} />
 
       <div className="hidden items-start text-base leading-[1.3] lg:flex">

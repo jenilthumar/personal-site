@@ -31,9 +31,9 @@ function display(href: string): string {
 export default function ContactPage() {
   return (
     <div className="flex flex-col gap-14 lg:gap-24">
-      <Statement as="h1">{`I'm always happy to talk about new work, collaborations, or just good design.`}</Statement>
+      <Statement as="h1" className="reveal">{`I'm always happy to talk about new work, collaborations, or just good design.`}</Statement>
 
-      <ProseColumns>
+      <ProseColumns className="reveal">
         <p>{`The fastest way to reach me is email.`}</p>
         <p>
           {`For project enquiries, a short note about what you're building and a rough timeline is all I need to get started.`}
@@ -60,7 +60,10 @@ export default function ContactPage() {
           const cls =
             "group/row flex items-center justify-between gap-6 py-5 text-[18px] leading-[1.2] tracking-[-0.16px] transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0";
           return (
-            <li key={link.href}>
+            // Each row reveals on its own so the table deals itself out top
+            // to bottom, hairlines riding along — the page is short enough
+            // that the whole run is on screen and the stagger does the work.
+            <li key={link.href} className="reveal">
               {external ? (
                 <a
                   href={link.href}

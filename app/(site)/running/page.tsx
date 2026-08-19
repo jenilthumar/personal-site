@@ -61,6 +61,11 @@ const QUALIFIER = `${LABEL} text-base`;
  * it clicks. Header to content is the feed's 24px; the pieces of content
  * below that get 32px, so a chart and the note explaining it read as one
  * block rather than two.
+ *
+ * Each block takes the site's reveal as one unit — header, chart and note
+ * arrive together. Whole, not piecemeal: this is data the reader came to
+ * read, and the one motion it gets is the entrance every block on the site
+ * gets. The bars inside still never animate (see the Chart note below).
  */
 function Block({
   title,
@@ -74,7 +79,7 @@ function Block({
   children: ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-6">
+    <section className="reveal flex flex-col gap-6">
       <header className="flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
         <h2 className="flex min-w-0 items-center gap-4">
           <span className="truncate font-medium text-on-surface">{title}</span>
@@ -225,9 +230,9 @@ export default function RunningPage() {
 
   return (
     <div className="flex flex-col gap-14 lg:gap-24">
-      <Statement as="h1">{`Am I getting fitter?`}</Statement>
+      <Statement as="h1" className="reveal">{`Am I getting fitter?`}</Statement>
 
-      <ProseColumns>
+      <ProseColumns className="reveal">
         <p>{d.answer}</p>
         <p>{d.paceNote}</p>
       </ProseColumns>
@@ -361,7 +366,7 @@ export default function RunningPage() {
         </Block>
       )}
 
-      <div className="flex max-w-[40rem] flex-col gap-4 text-oxley-700">
+      <div className="reveal flex max-w-[40rem] flex-col gap-4 text-oxley-700">
         <p className={NOTE}>
           {`Without a heart-rate strap there's no honest way to chart fitness. On pace alone an easy day and a hard day look the same, so any fitness line would be lying. The day I start running with a watch, this page gets a real one. Until then it counts what it can: that I keep lacing up.`}
         </p>
