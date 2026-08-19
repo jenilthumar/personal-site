@@ -65,9 +65,9 @@ export default function AboutPage() {
 
   return (
     <div className="flex flex-col gap-14 lg:gap-24">
-      <Statement as="h1">{`I'm Jenil. I design products and websites, and lately I build them too.`}</Statement>
+      <Statement as="h1" className="reveal">{`I'm Jenil. I design products and websites, and lately I build them too.`}</Statement>
 
-      <div className="relative w-full overflow-hidden bg-oxley-700/10 aspect-[4/3] sm:aspect-[1376/590]">
+      <div className="reveal relative w-full overflow-hidden bg-oxley-700/10 aspect-[4/3] sm:aspect-[1376/590]">
         <Image
           src={mediaUrl(PORTRAIT)}
           alt="Me on the beach in Goa, watching the sun go down over the Arabian Sea"
@@ -82,7 +82,7 @@ export default function AboutPage() {
         />
       </div>
 
-      <ProseColumns>
+      <ProseColumns className="reveal">
         <p>
           {`I'm a product and visual designer based in Surat. I design the work and build the front of it too, with Claude Code along for the ride, which lands me somewhere around design engineer. My taste runs quiet and functional more than loud, and the part I'm working on now is making it look as good as it works.`}
         </p>
@@ -97,10 +97,12 @@ export default function AboutPage() {
         </p>
       </ProseColumns>
 
-      <Statement>{`The mountains have my whole heart. Last April, right before Roboto, I walked up to Pangarchulla in Uttarakhand and I'm still not over it. It was that good.`}</Statement>
+      <Statement className="reveal">{`The mountains have my whole heart. Last April, right before Roboto, I walked up to Pangarchulla in Uttarakhand and I'm still not over it. It was that good.`}</Statement>
 
       {trek && (
-        <section aria-labelledby="trek-title">
+        // The trek photo can reveal whole — unlike the home covers it carries
+        // no view-transition name, so nothing morphs into it.
+        <section aria-labelledby="trek-title" className="reveal">
           {/* Header and photograph under one link, the way the home feed does
               it — the picture is the obvious thing to click, so it should be
               the thing that's clickable. */}
@@ -145,7 +147,7 @@ export default function AboutPage() {
         </section>
       )}
 
-      <ProseColumns>
+      <ProseColumns className="reveal">
         <p>
           {`Closer to home I take whatever I can reach from Surat: Saputara and Salher, Mount Abu, Malshej and the waterfall at Kalu. I follow mountaineering a lot more than I'm able to do it, which mostly means documentaries and a list of treks in Nepal I keep promising myself.`}
         </p>

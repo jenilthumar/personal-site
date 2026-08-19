@@ -41,7 +41,7 @@ export function ProjectView({
       )}
 
       {next && (
-        <div className="px-6 pb-24">
+        <div className="reveal px-6 pb-24">
           <NextWork item={next} />
         </div>
       )}

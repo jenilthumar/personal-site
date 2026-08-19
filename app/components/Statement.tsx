@@ -60,14 +60,18 @@ const FLARE_HUES = 6;
 export function Statement({
   as: Tag = "p",
   flare,
+  className,
   children,
 }: {
   /** `h1` where the statement is the page's heading, `p` where it's prose. */
   as?: ElementType;
   /** Phrase within the text to run the hover flare through. Omit for none. */
   flare?: string;
+  /** Appended to the statement styles — carries the page's `reveal` mark. */
+  className?: string;
   children: ReactNode;
 }) {
+  const cls = className ? `${STATEMENT} ${className}` : STATEMENT;
   // A phrase that isn't in the text — or isn't set at all — leaves the
   // statement as one plain string on the server, so emptying `statementFlare`
   // in lib/site turns the effect off and the client component with it.
@@ -75,13 +79,13 @@ export function Statement({
     flare && typeof children === "string" ? children.indexOf(flare) : -1;
 
   if (at === -1 || typeof children !== "string" || !flare) {
-    return <Tag className={STATEMENT}>{children}</Tag>;
+    return <Tag className={cls}>{children}</Tag>;
   }
 
   return (
     <StatementFlare
       as={Tag}
-      className={STATEMENT}
+      className={cls}
       before={children.slice(0, at)}
       words={flare.split(" ")}
       after={children.slice(at + flare.length)}

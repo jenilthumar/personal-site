@@ -21,10 +21,18 @@ import type { ReactNode } from "react";
  * Shared because the geometry is a design decision, not a per-page one — the
  * columns on About and Running have to line up with each other.
  */
-export function ProseColumns({ children }: { children: ReactNode }) {
+export function ProseColumns({
+  className,
+  children,
+}: {
+  /** Appended to the grid — carries the page's `reveal` mark where the block
+      enters on its own (left off inside a section that already reveals). */
+  className?: string;
+  children: ReactNode;
+}) {
+  const grid =
+    "grid max-w-[42rem] gap-8 text-[18px] leading-[1.4] tracking-[-0.16px] text-on-surface lg:max-w-none lg:grid-cols-[repeat(2,minmax(0,40rem))] lg:justify-between lg:gap-24";
   return (
-    <div className="grid max-w-[42rem] gap-8 text-[18px] leading-[1.4] tracking-[-0.16px] text-on-surface lg:max-w-none lg:grid-cols-[repeat(2,minmax(0,40rem))] lg:justify-between lg:gap-24">
-      {children}
-    </div>
+    <div className={className ? `${grid} ${className}` : grid}>{children}</div>
   );
 }

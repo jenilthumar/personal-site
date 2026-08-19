@@ -10,6 +10,12 @@ import { CaseVideo } from "./CaseVideo";
  * paragraphs / rich text) sit in a centered 800px column; images placed with
  * <Full> / <Row> break out full-bleed. Authored in the project's MDX body, so
  * text blocks are optional and ordered entirely by the editor.
+ *
+ * Every block-level mapping carries the site's `reveal`, so a case study
+ * sweeps in beat by beat as it's read — a heading and its paragraphs land in
+ * the same viewport and stagger; each image in a <Row> reveals as its own
+ * column. Inline pieces (links, strong) and the hr ride their block. <Row>
+ * itself stays plain so its children stagger instead of moving as a slab.
  */
 
 // Centered reading measure for text — left-aligned within an 800px column.
@@ -35,7 +41,7 @@ function Full({
 }) {
   return (
     <div
-      className="relative my-24 w-full overflow-hidden bg-oxley-700/10"
+      className="reveal relative my-24 w-full overflow-hidden bg-oxley-700/10"
       style={{ aspectRatio: cssRatio(aspect) }}
     >
       {src ? (
@@ -67,7 +73,7 @@ function Img({
   caption?: string;
 }) {
   return (
-    <figure className="flex min-w-0 flex-1 flex-col gap-2">
+    <figure className="reveal flex min-w-0 flex-1 flex-col gap-2">
       <div
         className="relative w-full overflow-hidden bg-oxley-700/10"
         style={{ aspectRatio: cssRatio(aspect) }}
@@ -105,36 +111,43 @@ function Row({ children }: { children?: ReactNode }) {
 
 export const projectMdxComponents: MDXComponents = {
   Full,
-  Video: CaseVideo,
+  // CaseVideo owns its playback and takes no className, so the reveal rides a
+  // wrapper. Block-level with no margins of its own, the video's my-24
+  // collapses straight through it — the spacing doesn't know it's there.
+  Video: (props: ComponentPropsWithoutRef<typeof CaseVideo>) => (
+    <div className="reveal">
+      <CaseVideo {...props} />
+    </div>
+  ),
   Row,
   Img,
   h2: (props: ComponentPropsWithoutRef<"h2">) => (
     <h2
-      className={`${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] text-on-surface`}
+      className={`reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] text-on-surface`}
       {...props}
     />
   ),
   h3: (props: ComponentPropsWithoutRef<"h3">) => (
     <h3
-      className={`${MEASURE} mt-16 mb-4 text-xl leading-[1.3] text-on-surface`}
+      className={`reveal ${MEASURE} mt-16 mb-4 text-xl leading-[1.3] text-on-surface`}
       {...props}
     />
   ),
   p: (props: ComponentPropsWithoutRef<"p">) => (
     <p
-      className={`${MEASURE} mb-4 text-base leading-[1.3] text-on-surface`}
+      className={`reveal ${MEASURE} mb-4 text-base leading-[1.3] text-on-surface`}
       {...props}
     />
   ),
   ul: (props: ComponentPropsWithoutRef<"ul">) => (
     <ul
-      className={`mx-auto mb-4 w-full max-w-[800px] list-disc space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
+      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-disc space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
       {...props}
     />
   ),
   ol: (props: ComponentPropsWithoutRef<"ol">) => (
     <ol
-      className={`mx-auto mb-4 w-full max-w-[800px] list-decimal space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
+      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-decimal space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
       {...props}
     />
   ),
@@ -158,7 +171,7 @@ export const projectMdxComponents: MDXComponents = {
   },
   blockquote: (props: ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
-      className={`${MEASURE} my-6 border-l border-oxley-700 pl-4 text-on-surface italic`}
+      className={`reveal ${MEASURE} my-6 border-l border-oxley-700 pl-4 text-on-surface italic`}
       {...props}
     />
   ),

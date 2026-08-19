@@ -165,8 +165,14 @@ function Entry({
         {/* Metadata reads as a caption of the cover above it, so it sits 16px
             under the image against the 56/96px between one project and the
             next — near enough to belong to the frame it names, far enough not
-            to crowd it. */}
-        <div className="mt-4 flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
+            to crowd it.
+
+            The caption takes the reveal; the cover above deliberately doesn't.
+            The cover is the morph's other end, and a view transition that
+            pairs into an element mid-reveal captures it half-faded — coming
+            back from a case study, the hero would fly home into nothing. The
+            hero travels, the caption sweeps. */}
+        <div className="reveal mt-4 flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
           <h3 className="flex min-w-0 items-center gap-4">
             <span className="truncate font-medium text-on-surface">
               {item.title}
@@ -251,7 +257,7 @@ export function WorkSection({
           Read off the list, so it can't drift out of date. */}
       <h2
         id={`${id}-title`}
-        className="flex items-start text-[clamp(2rem,3.49vw,3rem)] leading-[1.3] text-on-surface"
+        className="reveal flex items-start text-[clamp(2rem,3.49vw,3rem)] leading-[1.3] text-on-surface"
       >
         {title}
         <span className="ml-[0.15em] font-mono text-[0.5em] tracking-normal text-oxley-700">
