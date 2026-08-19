@@ -353,7 +353,7 @@ h2 {
    every navigation a full-page cross-fade for free, which is a page-load
    animation on the most-used route on the site; the hero travels, the rest of
    the page just swaps. */
-::view-transition-group(.morph) {
+::view-transition-group(*.morph) {
   animation-duration: 300ms;
   animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -365,10 +365,10 @@ h2 {
 /* Reduced motion drops the travel, not the connection: the hero lands in its
    new position immediately and the two snapshots cross-fade in place. */
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(.morph) {
+  ::view-transition-group(*.morph) {
     animation-duration: 0s;
   }
-  ::view-transition-image-pair(.morph) {
+  ::view-transition-image-pair(*.morph) {
     animation-duration: 150ms;
   }
 }

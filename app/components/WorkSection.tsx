@@ -158,7 +158,7 @@ function Entry({
           image that looked clickable and wasn't. */}
       <Link
         href={workHref(item)}
-        className="group/entry block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
+        className="group/project block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
       >
         <Cover item={item} eager={eager} />
 
