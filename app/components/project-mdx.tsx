@@ -21,6 +21,10 @@ import { CaseVideo } from "./CaseVideo";
 // Centered reading measure for text — left-aligned within an 800px column.
 const MEASURE = "mx-auto w-full max-w-[800px] px-6";
 
+// Section heading, shared by the markdown `##` mapping and <Impact> so the
+// band's heading can't drift away from the ones the body writes itself.
+const HEADING = `reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] text-on-surface`;
+
 const cssRatio = (aspect = "16/9") => aspect.replace("/", " / ");
 
 function Placeholder() {
@@ -109,8 +113,122 @@ function Row({ children }: { children?: ReactNode }) {
   );
 }
 
+/**
+ * A large single-sentence statement: the question a project set out to answer,
+ * or the problem stated in one line. A step above the h2 so it reads as the
+ * sentence a section is about rather than a heading for it, and regular weight,
+ * since the size is doing the work.
+ *
+ * Held to the reading measure rather than given a width of its own. The page
+ * already has two text edges (the measure, and the <Impact> band breaking out
+ * past it); a third, 50px off the first, reads as a misalignment rather than a
+ * decision. Size and colour are what set this apart, not indentation.
+ */
+function Lede({ children }: { children?: ReactNode }) {
+  return (
+    <p
+      className={`reveal ${MEASURE} my-24 text-[28px] leading-[1.2] tracking-[-0.01em] text-oxley-300 sm:text-[40px]`}
+    >
+      {children}
+    </p>
+  );
+}
+
+/**
+ * A figure, set the way the running page sets its figures — mono, medium,
+ * `leading-none`, scaling with the window between 24 and 32px. That page is
+ * already a page of statistics in this system and its reasoning transfers
+ * whole: 18px is too quiet for something meant to be read at a glance, and
+ * anything near the <Lede> puts the answers in a shouting match with the
+ * question. See the note above FIGURE in app/(site)/running/page.tsx.
+ *
+ * Tracking is the one departure. That page resets it to normal, because the
+ * -0.16px its rows carry is drawn for Inter and only cramps a face that is
+ * already monospaced at 18px. This is a display figure at 32px, where the
+ * generous advances mono is built with read as slack, so it takes a deliberate
+ * -0.03em of its own rather than inheriting Inter's.
+ */
+const FIGURE =
+  "font-mono text-[clamp(1.5rem,2.33vw,2rem)] leading-none font-medium tracking-[-0.03em] text-on-surface";
+
+/**
+ * One figure in an <Impact> section: the number, what it measures, and where
+ * the number comes from.
+ *
+ * The number leads and the mono carries it, which is this site's own order for
+ * a statistic rather than the detail grid's label-first one. Two earlier passes
+ * got this backwards in both directions: an Inter figure at 52px shouted over
+ * the lede, and a mono label above the figure put the loudest face on the
+ * quietest line and left the number sandwiched between two muted blocks. The
+ * label drops to Inter and the basis to mono `text-sm`, so the three lines
+ * actually rank.
+ *
+ * Leading with the figure also retires the subgrid the previous pass needed:
+ * the numbers are the first row of every column, so they line up without being
+ * told to.
+ */
+function Stat({
+  value,
+  label,
+  note,
+}: {
+  value: string;
+  label: string;
+  /** Where the figure comes from — a baseline, a window, a sample size. */
+  note?: string;
+}) {
+  return (
+    <div className="reveal flex flex-col gap-3">
+      <span className={FIGURE}>{value}</span>
+      <div className="flex flex-col gap-1">
+        <span className="text-base leading-[1.3] text-on-surface">{label}</span>
+        {note && (
+          <span className="font-mono text-sm leading-[1.3] tracking-normal text-oxley-700">
+            {note}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The results section: a heading and the figures under it.
+ *
+ * Held to the reading measure and headed like every other section, so it reads
+ * as part of the case study rather than a band dropped into one. It used to
+ * break out to 1160px, which gave the page a third text edge that lined up
+ * with nothing.
+ *
+ * The grid is the running page's stat grid down to the gaps, and like that one
+ * it carries no rules between the figures: a 32px mono number over a 16px label
+ * has all the contrast it needs, and hairlines around three items read as a
+ * table that isn't there.
+ */
+function Impact({
+  label = "Impact",
+  children,
+}: {
+  label?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <section>
+      <h2 className={HEADING}>{label}</h2>
+      <div
+        className={`${MEASURE} mb-24 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-16`}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+
 export const projectMdxComponents: MDXComponents = {
   Full,
+  Lede,
+  Impact,
+  Stat,
   // CaseVideo owns its playback and takes no className, so the reveal rides a
   // wrapper. Block-level with no margins of its own, the video's my-24
   // collapses straight through it — the spacing doesn't know it's there.
@@ -122,10 +240,7 @@ export const projectMdxComponents: MDXComponents = {
   Row,
   Img,
   h2: (props: ComponentPropsWithoutRef<"h2">) => (
-    <h2
-      className={`reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] text-on-surface`}
-      {...props}
-    />
+    <h2 className={HEADING} {...props} />
   ),
   h3: (props: ComponentPropsWithoutRef<"h3">) => (
     <h3

@@ -57,11 +57,17 @@ export function WorkCard({
         )}
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-4 text-base leading-[1.3]">
-        <span className="min-w-0 flex-1 truncate text-on-surface transition-colors group-hover:text-oxley-300">
-          {item.title}
-        </span>
-        <Tags tags={item.tags} className="shrink-0 justify-end whitespace-nowrap" />
+      <div className="mt-3 flex flex-col gap-1 text-base leading-[1.3]">
+        <div className="flex items-center justify-between gap-4">
+          <span className="min-w-0 flex-1 truncate text-on-surface transition-colors group-hover:text-oxley-300">
+            {item.title}
+          </span>
+          <Tags tags={item.tags} className="shrink-0 justify-end whitespace-nowrap" />
+        </div>
+        {/* What changed because the work shipped. Sits under the title so a
+            result reads before the click, the way the case study opens with
+            one — muted, since the title is still the card's line. */}
+        {item.outcome && <p className="text-oxley-700">{item.outcome}</p>}
       </div>
     </Link>
   );

@@ -5,6 +5,10 @@ import type { WorkItem } from "@/lib/content";
 function buildDetails(item: WorkItem): { label: string; value: ReactNode }[] {
   const details: { label: string; value: ReactNode }[] = [];
 
+  // Role leads: on a portfolio the reader is sizing up the person before the
+  // client, and it's the field a hiring manager scans for first.
+  if (item.role) details.push({ label: "Role", value: item.role });
+  if (item.team) details.push({ label: "Team", value: item.team });
   if (item.sectors) details.push({ label: "Sectors", value: item.sectors });
   if (item.services) details.push({ label: "Services", value: item.services });
   if (item.timeline) details.push({ label: "Timeline", value: item.timeline });

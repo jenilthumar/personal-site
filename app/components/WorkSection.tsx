@@ -172,12 +172,13 @@ function Entry({
             pairs into an element mid-reveal captures it half-faded — coming
             back from a case study, the hero would fly home into nothing. The
             hero travels, the caption sweeps. */}
-        <div className="reveal mt-4 flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
-          <h3 className="flex min-w-0 items-center gap-4">
-            <span className="truncate font-medium text-on-surface">
-              {item.title}
-            </span>
-            {/* The qualifier is spec, not sentence, so it takes the mono — but
+        <div className="reveal mt-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
+            <h3 className="flex min-w-0 items-center gap-4">
+              <span className="truncate font-medium text-on-surface">
+                {item.title}
+              </span>
+              {/* The qualifier is spec, not sentence, so it takes the mono — but
                 a step down at 16px, not the row's 18. Mono set at the row's own
                 size overpowers the title it qualifies: size-adjust lifts it 5%
                 and the fixed advance stretches it another 30. The brackets lose
@@ -187,18 +188,31 @@ function Entry({
 
                 Tracking resets because the row's -0.16px is drawn for Inter and
                 only cramps a face that's already monospaced. */}
-            {qualifier && (
-              <span className="hidden shrink-0 font-mono text-base tracking-normal text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
-                [{qualifier}]
-              </span>
-            )}
-          </h3>
+              {qualifier && (
+                <span className="hidden shrink-0 font-mono text-base tracking-normal text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
+                  [{qualifier}]
+                </span>
+              )}
+            </h3>
 
-          <span className="flex shrink-0 items-center gap-1 text-on-surface transition-colors group-hover/project:text-oxley-300">
-            {cta}
-            {/* Nudges along in two quantised pixel steps rather than gliding. */}
-            <ChevronMark className="transition-[translate] duration-150 ease-[steps(2,jump-start)] motion-safe:group-hover/project:translate-x-0.5" />
-          </span>
+            <span className="flex shrink-0 items-center gap-1 text-on-surface transition-colors group-hover/project:text-oxley-300">
+              {cta}
+              {/* Nudges along in two quantised pixel steps rather than gliding. */}
+              <ChevronMark className="transition-[translate] duration-150 ease-[steps(2,jump-start)] motion-safe:group-hover/project:translate-x-0.5" />
+            </span>
+          </div>
+
+          {/* What changed because the work shipped, when the entry states one.
+              A cover and a title say what a project looked like and nothing
+              about whether it did anything, so the result reads here, before
+              the click. Muted and a step down from the title's 18px: it's the
+              caption's second line, not a competing one. Photography carries
+              no outcome and so shows nothing. */}
+          {item.outcome && (
+            <p className="max-w-[620px] text-base leading-[1.3] text-oxley-700">
+              {item.outcome}
+            </p>
+          )}
         </div>
       </Link>
     </li>
