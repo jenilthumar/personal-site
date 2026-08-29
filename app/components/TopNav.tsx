@@ -28,7 +28,19 @@ export function TopNav() {
     // the shell layout never remounts client-side, so this fade runs once and
     // the masthead then holds still while pages sweep beneath it. Opacity
     // only — the token's note in globals.css explains why it can't travel.
-    <header className="animate-nav-in">
+    //
+    // `relative z-50` is not decoration, it's what makes the mobile sheet
+    // opaque. That fade is declared `both`, so the animation stays in effect
+    // after it finishes and the header keeps the stacking context an animating
+    // opacity gives it — permanently, at z-index auto. Everything the sheet is
+    // supposed to cover then outranks it by tree order alone: the home page's
+    // LineField is `position: relative` inside <main>, which comes after
+    // <header>, so the drawing painted straight through a `bg-surface` panel
+    // that was already as opaque as CSS can make it. Nothing inside the header
+    // can fix that — z-60 on the bar and z-50 on the sheet only sort the two
+    // of them against each other. The header itself has to be the thing that
+    // ranks, so it's given a z-index instead of inheriting one by accident.
+    <header className="relative z-50 animate-nav-in">
       <MobileNav projects={projects} photography={photography} />
 
       <div className="hidden items-start text-base leading-[1.3] lg:flex">
