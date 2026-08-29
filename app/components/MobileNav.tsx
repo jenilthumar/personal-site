@@ -6,7 +6,13 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { ChevronMark } from "./PixelMarks";
 import { ThemeToggle } from "./ThemeToggle";
-import { emailLink, FolderGroup, SheetRow, type NavItem } from "./nav-parts";
+import {
+  emailLink,
+  FolderGroup,
+  resumeHref,
+  SheetRow,
+  type NavItem,
+} from "./nav-parts";
 
 /**
  * The masthead below `lg`: a 44px bar, and a sheet behind it.
@@ -208,7 +214,7 @@ export function MobileNav({
                 <SheetRow label="Running" href="/running" current={pathname} />
               </li>
               <li>
-                <SheetRow label="Resume" href={site.resume} />
+                <SheetRow label="Resume" href={resumeHref} />
               </li>
             </ul>
           </nav>
