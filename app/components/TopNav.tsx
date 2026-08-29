@@ -2,7 +2,13 @@ import Link from "next/link";
 import { getWorkByCategory, workHref, type WorkItem } from "@/lib/content";
 import { site } from "@/lib/site";
 import { MobileNav } from "./MobileNav";
-import { ContactMail, FolderGroup, PageLink, type NavItem } from "./nav-parts";
+import {
+  ContactMail,
+  FolderGroup,
+  PageLink,
+  resumeHref,
+  type NavItem,
+} from "./nav-parts";
 
 /**
  * The masthead. Two designed layouts, not one that bends: from `lg` it's the
@@ -100,7 +106,7 @@ export function TopNav() {
               the rhythm 72px short of the right edge. */}
           <PageLink
             label="Resume"
-            href={site.resume}
+            href={resumeHref}
             column="pr-18 max-xl:pr-0"
           />
           <div className="max-xl:hidden">

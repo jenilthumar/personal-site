@@ -40,11 +40,13 @@ export const site = {
   dateRange: "May[25] ⎯ Present",
 
   /**
-   * Where the résumé lives. Empty until there's something to point at — the
-   * nav renders the item either way, as plain muted text while this is blank
-   * and as a link the moment it isn't. Nothing else needs changing.
+   * Where the résumé lives — a media path, resolved through `mediaUrl` at the
+   * nav like every image on the site. Re-uploading a newer PDF under the same
+   * name replaces it and nothing here changes, which is the reason the file
+   * isn't dated. Empty still works: the nav renders the item as plain muted
+   * text while there's nothing to point at.
    */
-  resume: "",
+  resume: "jenil-thummar-resume.pdf",
 
   /** Shown in the footer, beside the year. */
   location: "Surat, India",

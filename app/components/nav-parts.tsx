@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { mediaUrl } from "@/lib/media";
 import { site } from "@/lib/site";
 import { BulletMark } from "./PixelMarks";
 
@@ -25,6 +26,15 @@ import { BulletMark } from "./PixelMarks";
  */
 
 export type NavItem = { slug: string; title: string; href: string };
+
+/**
+ * Anything off this site — the résumé PDF is the only one — opens in its own
+ * tab. Loaded in place a PDF takes the site's slot: what comes back is the
+ * browser's own viewer, and leaving it means backing out through that. The
+ * pages, which are pages, navigate normally.
+ */
+const offSite = (href: string) =>
+  /^https?:\/\//.test(href) ? { target: "_blank", rel: "noreferrer" } : {};
 
 /**
  * One tappable line in the mobile sheet.
@@ -61,6 +71,7 @@ export function SheetRow({
   return (
     <Link
       href={href}
+      {...offSite(href)}
       aria-current={active ? "page" : undefined}
       className={`${row} ${
         active ? "text-oxley-300" : "text-on-surface"
@@ -178,6 +189,7 @@ export function PageLink({
   const link = href ? (
     <Link
       href={href}
+      {...offSite(href)}
       className="w-fit font-medium text-on-surface hover:text-oxley-300"
     >
       {label}
@@ -191,6 +203,13 @@ export function PageLink({
 export const emailLink = site.social.find((link) =>
   link.href.startsWith("mailto:"),
 );
+
+/**
+ * The résumé's address, resolved once for both masthead layouts. A media path
+ * in site config, a Blob URL by the time a link sees it. An empty setting stays
+ * empty so PageLink can still render the item as text.
+ */
+export const resumeHref = site.resume ? mediaUrl(site.resume) : "";
 
 /**
  * The address, not a button to a page about the address.
