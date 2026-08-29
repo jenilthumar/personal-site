@@ -82,6 +82,15 @@ export type WorkItem = {
   /** Falls back to `company`. */
   client?: string;
   company?: string;
+  /** The hat worn on this one, e.g. "Founder & Product Designer". Leads the
+   * detail grid: on a portfolio the reader is sizing up the person, not the
+   * client. */
+  role?: string;
+  /** Who else was on it, e.g. "Solo designer, 3 engineers". */
+  team?: string;
+  /** One line on what changed because the work shipped. Printed under the
+   * title on the home grid, so a result reads before the click. */
+  outcome?: string;
   /** External link. Projects render it as "Visit"; photography treats a YouTube
    * link as the item's film (shown by FilmSpotlight). */
   url?: string;
@@ -125,6 +134,9 @@ export function getAllWork(): WorkItem[] {
       timeline: data.timeline,
       client: data.client,
       company: data.company,
+      role: data.role,
+      team: data.team,
+      outcome: data.outcome,
       url: data.url,
       feed: Array.isArray(data.feed)
         ? data.feed.map((row: FeedEntry | FeedEntry[]) =>
