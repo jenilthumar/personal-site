@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getWorkByCategory, workHref, type WorkItem } from "@/lib/content";
 import { site } from "@/lib/site";
 import { MobileNav } from "./MobileNav";
+import { ThemeToggle } from "./ThemeToggle";
 import {
   ContactMail,
   FolderGroup,
@@ -113,6 +114,27 @@ export function TopNav() {
             <ContactMail />
           </div>
         </nav>
+
+        {/* Outside the nav rather than the last item in it, and that's the
+            whole placement decision. `justify-between` hands its slack to
+            every gap equally, so a 16px mark dropped into the row would have
+            been pushed a hundred-odd pixels off the address and read as
+            something that had come loose. Out here it takes a fixed margin and
+            the address keeps the right edge of the text row, which is where
+            the note above says the rhythm should put it.
+
+            48px, not the 24 of the flex gap. The optical gap the eye reads is
+            that plus the button's own 8px of padding, and at 32 the disc still
+            looked like a suffix on the address rather than a separate thing —
+            against optical gaps of roughly 120 everywhere else in the row, it
+            has to be the loosest pair on the line before it reads as chrome
+            sitting apart from the navigation.
+
+            No pt of its own: the nav's own 6px plus the 20.8px line box centre
+            the first row of type at 16.4px from the top, and a 32px button
+            starting at 0 centres at 16. Within half a pixel, so the disc sits
+            on the same optical line as the words beside it. */}
+        <ThemeToggle className="ml-12" />
       </div>
     </header>
   );

@@ -82,6 +82,15 @@
   --flare-4: var(--dark-flare-4);
   --flare-5: var(--dark-flare-5);
   --flare-6: var(--dark-flare-6);
+
+  /* Which way the theme switch's half-disc points. It rides with the palette
+     rather than with the button's own state, so the mark is already correct at
+     first paint — the inline script in the root layout sets data-theme before
+     anything renders, and the media query covers everyone who never chose. No
+     hydration pass has to spin it into place. ThemeToggle adds whole turns on
+     top of this so the switch only ever turns forwards; the note there
+     explains the arithmetic. */
+  --toggle-turn: 0deg;
   color-scheme: dark;
 }
 
@@ -97,7 +106,7 @@
    holds the same 225.5° blue cast in both themes and the hairlines stay cool
    instead of falling back to dead gray.
 
-   Two rules, in this order, because the toggle has three states and only two
+   Two rules, in this order, because there are three situations and only two
    palettes. The system preference is honoured unless the reader has explicitly
    asked for dark; an explicit light overrides the system on either side. The
    two selectors carry equal specificity (0,2,0), so source order is what makes
@@ -106,7 +115,9 @@
    `data-theme` is set on <html> by the inline script in the root layout before
    first paint, and by ThemeToggle thereafter. Absent means "follow the system",
    which is why it's an absence rather than data-theme="system": nothing has to
-   run for the default to be right. */
+   run for the default to be right. The switch itself is a plain two-way one —
+   it always writes an explicit value — but it never gets the chance to write
+   anything for a reader who doesn't touch it, which is the whole point. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     --surface: var(--light-surface);
@@ -119,6 +130,7 @@
     --flare-4: var(--light-flare-4);
     --flare-5: var(--light-flare-5);
     --flare-6: var(--light-flare-6);
+    --toggle-turn: 180deg;
     color-scheme: light;
   }
 }
@@ -134,6 +146,7 @@
   --flare-4: var(--light-flare-4);
   --flare-5: var(--light-flare-5);
   --flare-6: var(--light-flare-6);
+  --toggle-turn: 180deg;
   color-scheme: light;
 }
 
@@ -212,10 +225,23 @@ h2 {
    entrance is allowed a breath before it moves, and the deep settle is what
    makes the sweep feel placed rather than tossed. Opacity-first throughout;
    anything that travels is gated behind prefers-reduced-motion, plain fades
-   stay for all. */
+   stay for all.
+
+   ease-detent is the third, and it has exactly one job: the theme switch. It
+   is ease-out-quart with a 3% overshoot bolted on, which on a half turn is
+   5.4° past the mark before it settles back. That is what a physical switch
+   does when it drops into its notch, and it's the whole reason the control
+   reads as a thing with a spring in it rather than a picture that changed. The
+   figure is deliberately small — the stock back-out curve overshoots 9.8%, and
+   17.6° of swing on a 16px mark is a wobble, not a detent. It reaches the
+   target at 35% of the duration and spends the rest settling, so the response
+   is as immediate as the house curve's; the tail is the part you feel rather
+   than watch. Don't reach for it on anything else: a detent on something that
+   isn't a switch is just a bounce. */
 @theme inline {
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-detent: cubic-bezier(0.2, 1.3, 0.35, 1);
   --animate-fade-in: fade-in 200ms cubic-bezier(0.25, 1, 0.5, 1);
   --animate-fade-out: fade-out 150ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
   --animate-rise-in: rise-in 240ms cubic-bezier(0.25, 1, 0.5, 1);

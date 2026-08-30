@@ -42,7 +42,9 @@ import {
  * window with its footer pinned to the bottom edge, so anything past the
  * window's height isn't laid out further down the page — it's cut off. The
  * previous arrangement came to 828px of content, which no phone has, and the
- * theme toggle spent its life sliced in half at the bottom of the screen.
+ * last row spent its life sliced in half at the bottom of the screen. The
+ * theme switch, which used to be down there too, is in the bar now — it isn't
+ * navigation and it shouldn't need a menu opened to reach it.
  *
  * This is the one client component in the masthead, and only because a menu
  * has to close itself: on navigation (a tap that leaves the panel up is the
@@ -146,6 +148,27 @@ export function MobileNav({
               }`}
             />
           </button>
+
+          {/* Past Menu rather than before it, so the switch is on the same
+              edge here as it is on the wide bar and the two layouts agree
+              about where it lives. It costs Menu the corner, which is the one
+              argument against — but Menu is a word 44px tall with the whole
+              gap to the wordmark behind it, and it stays the easiest thing in
+              the bar to hit either way.
+
+              It's in the bar and not in the sheet because the sheet is a
+              height budget (see the panel below) and this is the one control
+              in the masthead that has nothing to do with where you're going.
+              Somewhere you have to open a menu to reach is the wrong place for
+              the thing you press when the room gets dark.
+
+              ml-2 rather than the ml-1 that looked right: both controls are
+              44px targets and 4px of dead space between two of them is a
+              mis-tap waiting to happen, on the one pair where the mis-tap
+              repaints the whole site instead of just going somewhere. 8px is
+              still tight against the bar's own gap-4, and it's the smallest
+              step that puts a real edge between them. */}
+          <ThemeToggle className="ml-2" />
         </div>
       </div>
 
@@ -158,8 +181,8 @@ export function MobileNav({
           // coincidence that stopped being affordable. The sheet is a fixed
           // panel with a footer pinned to its bottom edge, and the whole thing
           // measured 828px of content: on any phone shorter than that the
-          // address and the theme toggle were simply below the fold, cut off
-          // mid-glyph at the window edge. Everything in here is now sized
+          // address and the theme toggle it then sat beside were simply below
+          // the fold, cut off mid-glyph at the window edge. Everything is sized
           // against a height budget first, and this is the largest single line
           // item that was purely decorative.
           //
@@ -220,24 +243,22 @@ export function MobileNav({
           </nav>
 
           {/* Pinned to the bottom of the sheet, on the site's own hairline.
-              The label and the toggle share a line — both are mono, both are
-              muted, so they read as one strip of small print rather than two
-              things stacked — and that hands the address the full width back.
-              It needs it: 26 characters at 20px measure 278px against 358 of
-              phone, so a toggle on the same line would leave nothing under
-              380px. The address drops to 18 there anyway, where 20 runs over
-              the gutters.
 
-              The label is no longer part of the link. It never earned being
-              one — the address is the affordance, and the tap opens a compose
+              The label used to share this line with the theme toggle, which is
+              now in the bar above. Nothing takes its place: a label and an
+              address are a caption and the thing it captions, and with the row
+              down to one item the flex that spread it is a `justify-between`
+              with nothing to push against.
+
+              The label is not part of the link. It never earned being one —
+              the address is the affordance, and the tap opens a compose
               window. White is the token this design reserves for footer
               navigation, so the address carries the emphasis and the label
               stays muted. */}
           <div className="mt-auto flex flex-col gap-2 border-t border-oxley-700/25 pt-5">
-            <div className="flex items-center justify-between gap-4 font-mono text-base leading-[1.2] tracking-normal text-oxley-700">
-              <span>Get in touch</span>
-              <ThemeToggle />
-            </div>
+            <p className="font-mono text-base leading-[1.2] tracking-normal text-oxley-700">
+              Get in touch
+            </p>
             <a
               href={emailLink?.href}
               className="w-fit text-[18px] leading-[1.2] font-medium tracking-[-0.01em] text-oxley-300 min-[380px]:text-[20px]"
