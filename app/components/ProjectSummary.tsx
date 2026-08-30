@@ -30,9 +30,11 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
     // simply being the LCP) is its entrance.
     <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
       <div className="reveal flex max-w-[480px] flex-col gap-4">
-        <h1 className="text-[32px] leading-[1.3] text-on-surface">{item.title}</h1>
+        <h1 className="text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
+          {item.title}
+        </h1>
         {description && (
-          <p className="text-base leading-[1.3] text-on-surface">{description}</p>
+          <p className="text-base leading-[1.3] text-body">{description}</p>
         )}
         {item.url && (
           <a
@@ -70,7 +72,7 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
               <dt className="font-mono text-base leading-[1.3] text-oxley-700">
                 {detail.label}
               </dt>
-              <dd className="text-base leading-[1.3] break-words text-on-surface">
+              <dd className="text-base leading-[1.3] break-words text-body">
                 {detail.value}
               </dd>
             </div>

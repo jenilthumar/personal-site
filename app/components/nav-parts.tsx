@@ -109,8 +109,8 @@ export function FolderGroup({
    * The sheet inverts the bar's arrangement. There, heading and items are the
    * same size and an indent separates them; here the heading drops to the mono
    * label the site already uses for metadata — the footer's "Get in touch",
-   * the bracketed counts, the theme toggle — and the items take the sheet's
-   * one destination size.
+   * the bracketed counts — and the items take the sheet's one destination
+   * size.
    *
    * That fixes the thing this panel actually got wrong. It used to set the
    * folders at 32px and the case studies beneath them at 18, so the pages you

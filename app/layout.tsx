@@ -53,8 +53,9 @@ export default function RootLayout({
         {/* Applies a stored theme override before first paint. Without it the
             page renders the system palette and then flips once React runs,
             which is a full-page colour flash on every load for anyone who has
-            chosen a theme. Absent storage means Auto, so this does nothing at
-            all for most readers. */}
+            chosen a theme. Nothing stored means the palette follows the OS, so
+            this does nothing at all for a reader who has never touched the
+            switch in the masthead. */}
         <InlineScript
           html={`try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`}
         />

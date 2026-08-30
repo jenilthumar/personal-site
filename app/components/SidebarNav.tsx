@@ -120,7 +120,7 @@ export function SidebarNav({
           <div className="flex flex-col gap-12 pt-8 lg:h-full lg:justify-between lg:gap-0">
             <div className="flex flex-col gap-8">
               {/* Bio — identity, so it sits out of the mobile menu */}
-              <p className={`text-on-surface ${dimOnMobile}`}>{site.bio}</p>
+              <p className={`text-body ${dimOnMobile}`}>{site.bio}</p>
 
               {/* Currently designing at … */}
               <div className={`flex flex-col gap-1 ${dimOnMobile}`}>

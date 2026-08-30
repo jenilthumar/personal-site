@@ -1,35 +1,54 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 /**
- * Three states, one control: follow the system, or override it either way.
+ * A two-way theme switch, drawn as a half-filled disc that turns.
  *
- * "Auto" is the absence of `data-theme` rather than a value of its own, so the
- * default costs nothing — no script has to run and no attribute has to be set
- * for a first-time reader to get the palette their OS asked for. Choosing
- * light or dark writes the attribute and stores it; choosing Auto removes
- * both. See the two rules in globals.css that read it.
+ * It used to be `[Auto]` cycling through three states in the footer. Three
+ * states is the more honest model and it's still the model underneath — see
+ * below — but as a control it asked the reader to press a word twice to find
+ * out what the third press did. What's here now is a switch: one press, one
+ * half turn, the mark points the other way.
  *
- * It cycles rather than offering three targets. A segmented control would say
- * more, but it would be the largest piece of chrome on a site whose footer is
- * otherwise four lines of small print, and the state is always written out.
+ * Auto survives as the default rather than as a position on the dial. Nothing
+ * is stored until the switch is touched, and until then the palette follows the
+ * OS live — the two rules in globals.css read `data-theme`'s absence, and this
+ * component takes care never to write the attribute for someone who hasn't
+ * asked. So a reader who never touches it keeps a theme that tracks their
+ * system all day; a reader who does has said what they want and gets it.
+ *
+ * ── The turn ────────────────────────────────────────────────────────────────
+ * The mark's resting orientation is a CSS variable that ships with the palette
+ * (`--toggle-turn`: 0deg dark, 180deg light), not React state. That's what
+ * makes it correct in the first painted frame: the inline script in the root
+ * layout sets `data-theme` before anything renders, and the media query covers
+ * everyone else, so there's no moment where a stored-light reader sees the disc
+ * facing the wrong way, and nothing has to spin on hydration to fix it.
+ *
+ * `turns` is the tactile half of that, and it's the only thing this component
+ * counts. A real switch doesn't rewind: press it four times and it has gone
+ * round twice, not back and forth. But the CSS base alternates 0 → 180 → 0, so
+ * every second press would run backwards on its own. Adding a full turn on the
+ * presses that land on dark cancels that out:
+ *
+ *     press:   1      2      3      4
+ *     base:    180    0      180    0
+ *     turns:   0      360    360    720
+ *     total:   180 →  360 →  540 →  720
+ *
+ * Always forwards, always exactly half a turn, and because `turns` starts at 0
+ * and only moves on a click there's nothing here for the server and the client
+ * to disagree about.
  *
  * The stored choice is read through useSyncExternalStore rather than an effect.
  * localStorage is external state that doesn't exist during the server render,
- * which is precisely what that hook is for — it takes a server snapshot, so
- * there's no hydration mismatch, and no setState-in-an-effect to paint the
- * wrong label first. Subscribing also picks up the `storage` event, so changing
- * the theme in one tab settles every other open tab.
+ * which is precisely what that hook is for. Subscribing also picks up the
+ * `storage` event and the OS's own colour-scheme change, so a switch thrown in
+ * one tab settles every other open tab, and an untouched tab follows the system
+ * when it flips at sundown.
  */
-const ORDER = ["system", "light", "dark"] as const;
-type Choice = (typeof ORDER)[number];
-
-const LABEL: Record<Choice, string> = {
-  system: "Auto",
-  light: "Light",
-  dark: "Dark",
-};
+type Theme = "light" | "dark";
 
 const KEY = "theme";
 
@@ -39,80 +58,152 @@ const listeners = new Set<() => void>();
 /**
  * Where the choice lives once storage has refused to take it. Safari in private
  * mode is the case: `getItem` answers, `setItem` throws, so a read-only check
- * doesn't catch it. Without this the snapshot would keep reporting whatever was
- * stored before — Auto, for anyone who never chose — and the cycle would pick
- * light every single click while the label sat unmoved. Null until a write
- * actually fails, so the normal path never touches it.
+ * doesn't catch it. Without this the snapshot would keep reporting the system
+ * preference, and the switch would flip to the same side on every press while
+ * the page behind it did change. Null until a write actually fails, so the
+ * normal path never touches it.
  */
-let memory: Choice | null = null;
+let memory: Theme | null = null;
 
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
   window.addEventListener("storage", onChange);
+  const scheme = window.matchMedia("(prefers-color-scheme: light)");
+  scheme.addEventListener("change", onChange);
   return () => {
     listeners.delete(onChange);
     window.removeEventListener("storage", onChange);
+    scheme.removeEventListener("change", onChange);
   };
 }
 
-function getSnapshot(): Choice {
+/** The explicit choice, or null for a reader who hasn't made one. */
+function stored(): Theme | null {
   if (memory) return memory;
   try {
-    const stored = localStorage.getItem(KEY);
-    return stored === "light" || stored === "dark" ? stored : "system";
+    const value = localStorage.getItem(KEY);
+    return value === "light" || value === "dark" ? value : null;
   } catch {
-    // Storage is gone entirely; Auto is a fine answer until something is picked.
-    return "system";
+    // Storage is gone entirely; the system preference is a fine answer.
+    return null;
   }
 }
 
-/** Nothing is stored on the server, so the first paint always says Auto. */
-const getServerSnapshot = (): Choice => "system";
-
-/** Auto is the absence of the attribute, so system deletes rather than sets. */
-function paint(choice: Choice) {
-  const root = document.documentElement;
-  if (choice === "system") delete root.dataset.theme;
-  else root.dataset.theme = choice;
+/** What's actually on screen: the choice if there is one, the OS if not. */
+function getSnapshot(): Theme {
+  return (
+    stored() ??
+    (window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark")
+  );
 }
 
+/**
+ * Dark is the design's own default, so that's what the server assumes. It only
+ * decides the accessible name for the few milliseconds before hydration — the
+ * drawing is CSS's job and is right either way — and a screen reader doesn't
+ * reach a control it hasn't been focused on that fast.
+ */
+const getServerSnapshot = (): Theme => "dark";
+
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const choice = useSyncExternalStore(
+  const theme = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot,
   );
-  const next = ORDER[(ORDER.indexOf(choice) + 1) % ORDER.length];
+  const next: Theme = theme === "dark" ? "light" : "dark";
+  const [turns, setTurns] = useState(0);
 
-  // The snapshot is the one source of truth for what's on screen, which is what
-  // makes the cross-tab case work: a `storage` event moves `choice` in a tab
-  // nobody clicked, and the palette has to follow it there too. The click path
-  // paints ahead of this so the change isn't a frame late where it's watched.
+  // The snapshot is the one source of truth for what's on <html>, which is what
+  // makes the cross-tab case work: a `storage` event moves `theme` in a tab
+  // nobody clicked, and the palette has to follow it there too. It writes the
+  // stored value rather than the resolved one on purpose — for a reader who has
+  // never chosen, `stored()` is null and the attribute stays off, so the media
+  // query keeps the page tracking the OS instead of being pinned to whatever it
+  // happened to say at load.
   useEffect(() => {
-    paint(choice);
-  }, [choice]);
+    const root = document.documentElement;
+    const choice = stored();
+    if (choice) root.dataset.theme = choice;
+    else delete root.dataset.theme;
+  }, [theme]);
 
-  const apply = () => {
-    paint(next);
+  const flip = () => {
+    document.documentElement.dataset.theme = next;
     try {
-      if (next === "system") localStorage.removeItem(KEY);
-      else localStorage.setItem(KEY, next);
+      localStorage.setItem(KEY, next);
     } catch {
       memory = next;
     }
+    // See the table above: the presses that land on dark are the ones whose
+    // base rotation runs backwards, so those are the ones that need a full
+    // turn added to keep the switch moving one way.
+    if (next === "dark") setTurns((t) => t + 360);
     listeners.forEach((notify) => notify());
   };
 
   return (
     <button
       type="button"
-      onClick={apply}
-      // The visible text is the current state, which reads as a status rather
-      // than an action, so the accessible name says what pressing it does.
-      aria-label={`Theme: ${LABEL[choice]}. Switch to ${LABEL[next]}`}
-      className={`w-fit font-mono tracking-normal text-oxley-700 hover:text-on-surface ${className}`}
+      onClick={flip}
+      // The switch says nothing in words, so the name has to carry both the
+      // state and what pressing it does.
+      aria-label={`${theme === "dark" ? "Dark" : "Light"} theme. Switch to ${next}`}
+      title={`Switch to ${next} theme`}
+      // 44px of target on a phone bar, 32 on the wide one, in both cases far
+      // more than the 16px mark inside it — and pulled back out of the layout
+      // by the negative margin so the disc's own edge, not its padding, lands
+      // on the right edge everything else in the row is aligned to.
+      //
+      // Muted, and it's the one thing here that took a second look. Set in the
+      // primary ink it matched the nav words on paper and outweighed them on
+      // screen: a solid half-disc puts far more ink in 16px than a letterform
+      // does, so the brightest object in the masthead was the control nobody
+      // came for. oxley-700 is the token this design already spends on chrome,
+      // it's what the old bracketed toggle wore, and it still clears 5.1:1 —
+      // well past the 3:1 a mark this size is held to. The hover is what makes
+      // it a control: it comes up to full ink under the pointer.
+      className={`-mr-3.5 flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-oxley-700 hover:text-on-surface lg:-mr-2 lg:h-8 lg:w-8 ${className}`}
     >
-      [{LABEL[choice]}]
+      {/* Two nested spans because the press and the turn are two different
+          gestures on two different clocks. Outer: the compression under a
+          finger, 150ms on the house curve, since it's pure response and
+          nothing about it should be felt as motion. Inner: the half turn,
+          400ms on the detent curve. They could share an element — Tailwind
+          emits `scale` as its own property, so it doesn't collide with the
+          inline `transform` — but not a transition, and the two timings are
+          the whole effect. Press and it gives; release and it turns. */}
+      <span className="flex motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out-quart motion-safe:active:scale-[0.86]">
+        <span
+          className="flex motion-safe:transition-transform motion-safe:duration-[400ms] motion-safe:ease-detent"
+          style={{ transform: `rotate(calc(var(--toggle-turn) + ${turns}deg))` }}
+        >
+          {/* A ring with one half filled in: the contrast mark, which is the
+              one icon for this that doesn't have to pick a side. A sun and a
+              moon are two drawings swapping places; this is one drawing
+              turning, which is the only reason the motion reads as a
+              mechanism. The fill is drawn at r=6 so it covers the ring's outer
+              edge exactly and the two halves meet on one clean diameter. */}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              cx="8"
+              cy="8"
+              r="5.25"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path d="M8 2a6 6 0 0 0 0 12Z" fill="currentColor" />
+          </svg>
+        </span>
+      </span>
     </button>
   );
 }

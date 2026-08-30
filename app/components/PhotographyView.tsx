@@ -24,7 +24,7 @@ export function PhotographyView({
             page's chrome, and chrome holds still while content arrives. */}
         <div className="reveal mt-16 mb-16 flex max-w-[640px] flex-col gap-4 sm:mb-20">
           <div className="flex items-baseline gap-2">
-            <h1 className="text-[32px] leading-[1.3] text-on-surface">
+            <h1 className="text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
               {item.title}
             </h1>
             {count ? (
@@ -34,9 +34,7 @@ export function PhotographyView({
             ) : null}
           </div>
           {description && (
-            <p className="text-base leading-[1.3] text-on-surface">
-              {description}
-            </p>
+            <p className="text-base leading-[1.3] text-body">{description}</p>
           )}
         </div>
       </header>

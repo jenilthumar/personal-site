@@ -1,5 +1,4 @@
 import { site } from "@/lib/site";
-import { ThemeToggle } from "./ThemeToggle";
 
 /**
  * The site footer, kept to two things: an address on the left, place and year
@@ -36,9 +35,6 @@ export function Footer() {
         <div className="flex flex-col gap-1 font-mono text-oxley-700 sm:items-end">
           <p>{site.location}</p>
           <p>© {year}</p>
-          {/* Chrome, so it sits with the chrome. Bracketed to match the
-              qualifiers the rest of the site labels things with. */}
-          <ThemeToggle className="mt-2" />
         </div>
       </div>
     </footer>

@@ -83,7 +83,9 @@ function Block({
       <header className="flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">
         <h2 className="flex min-w-0 items-center gap-4">
           <span className="truncate font-medium text-on-surface">{title}</span>
-          <span className={`hidden shrink-0 ${QUALIFIER} text-oxley-700 sm:inline`}>
+          <span
+            className={`hidden shrink-0 ${QUALIFIER} text-oxley-700 sm:inline`}
+          >
             [{tag}]
           </span>
         </h2>
@@ -115,7 +117,7 @@ function Figure({
         )}
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-base leading-[1.3] text-on-surface">{label}</span>
+        <span className="text-base leading-[1.3] text-body">{label}</span>
         <span className={`${LABEL} text-sm leading-[1.3] text-oxley-700`}>
           {sub}
         </span>
@@ -256,8 +258,17 @@ export default function RunningPage() {
 
       <Block title="The count" tag={`${d.year} so far`}>
         <Figures>
-          <Figure value={String(d.yearKm)} unit="km" label="Covered" sub="this year" />
-          <Figure value={String(d.yearOutings)} label="Outings" sub="Feb to now" />
+          <Figure
+            value={String(d.yearKm)}
+            unit="km"
+            label="Covered"
+            sub="this year"
+          />
+          <Figure
+            value={String(d.yearOutings)}
+            label="Outings"
+            sub="Feb to now"
+          />
           <Figure
             value={String(d.yearRuns)}
             label="Runs"
@@ -270,7 +281,7 @@ export default function RunningPage() {
             sub={`best ${d.streakBest}`}
           />
         </Figures>
-        <p className={`${NOTE} text-on-surface`}>{d.streakNote}</p>
+        <p className={`${NOTE} text-body`}>{d.streakNote}</p>
       </Block>
 
       <Block title="Bests" tag="Set this year">
@@ -285,9 +296,7 @@ export default function RunningPage() {
             />
           ))}
         </Figures>
-        {d.pacingNote && (
-          <p className={`${NOTE} text-on-surface`}>{d.pacingNote}</p>
-        )}
+        {d.pacingNote && <p className={`${NOTE} text-body`}>{d.pacingNote}</p>}
       </Block>
 
       <Block
@@ -301,7 +310,9 @@ export default function RunningPage() {
               key={slot.label}
               className="flex items-baseline justify-between gap-6 py-5 text-[18px] leading-[1.2] tracking-[-0.16px]"
             >
-              <span className="min-w-0 truncate text-on-surface">{slot.label}</span>
+              <span className="min-w-0 truncate text-on-surface">
+                {slot.label}
+              </span>
               {/* The pace column is measured in `ch` now the face is monospaced:
                   one ch is one advance, so 8ch is exactly the width of the
                   widest value here ("12:16/km") with nothing left over. It used
@@ -319,7 +330,7 @@ export default function RunningPage() {
             </div>
           ))}
         </div>
-        <p className={`${NOTE} text-on-surface`}>{d.todNote}</p>
+        <p className={`${NOTE} text-body`}>{d.todNote}</p>
       </Block>
 
       {d.routes.length > 0 && (
@@ -356,7 +367,9 @@ export default function RunningPage() {
                   <span className="truncate text-base leading-[1.3] text-on-surface">
                     {route.name}
                   </span>
-                  <span className={`${LABEL} text-sm leading-[1.3] text-oxley-700`}>
+                  <span
+                    className={`${LABEL} text-sm leading-[1.3] text-oxley-700`}
+                  >
                     {route.km} km · {route.pace}/km · {route.date}
                   </span>
                 </figcaption>
