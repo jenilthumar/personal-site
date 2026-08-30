@@ -23,7 +23,7 @@ const MEASURE = "mx-auto w-full max-w-[800px] px-6";
 
 // Section heading, shared by the markdown `##` mapping and <Impact> so the
 // band's heading can't drift away from the ones the body writes itself.
-const HEADING = `reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] text-on-surface`;
+const HEADING = `reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface`;
 
 const cssRatio = (aspect = "16/9") => aspect.replace("/", " / ");
 
@@ -116,8 +116,12 @@ function Row({ children }: { children?: ReactNode }) {
 /**
  * A large single-sentence statement: the question a project set out to answer,
  * or the problem stated in one line. A step above the h2 so it reads as the
- * sentence a section is about rather than a heading for it, and regular weight,
- * since the size is doing the work.
+ * sentence a section is about rather than a heading for it.
+ *
+ * Medium, like every other title on the page. It was regular for a while on the
+ * theory that the size was doing the work; set against paragraphs that are also
+ * regular, it wasn't — the page read as one long block at three sizes. Weight
+ * is what separates the things you're meant to skim from the things you read.
  *
  * Held to the reading measure rather than given a width of its own. The page
  * already has two text edges (the measure, and the <Impact> band breaking out
@@ -127,7 +131,7 @@ function Row({ children }: { children?: ReactNode }) {
 function Lede({ children }: { children?: ReactNode }) {
   return (
     <p
-      className={`reveal ${MEASURE} my-24 text-[28px] leading-[1.2] tracking-[-0.01em] text-oxley-300 sm:text-[40px]`}
+      className={`reveal ${MEASURE} my-24 text-[28px] leading-[1.2] font-medium tracking-[-0.02em] text-oxley-300 sm:text-[40px]`}
     >
       {children}
     </p>
@@ -181,7 +185,7 @@ function Stat({
     <div className="reveal flex flex-col gap-3">
       <span className={FIGURE}>{value}</span>
       <div className="flex flex-col gap-1">
-        <span className="text-base leading-[1.3] text-on-surface">{label}</span>
+        <span className="text-base leading-[1.3] text-body">{label}</span>
         {note && (
           <span className="font-mono text-sm leading-[1.3] tracking-normal text-oxley-700">
             {note}
@@ -244,25 +248,25 @@ export const projectMdxComponents: MDXComponents = {
   ),
   h3: (props: ComponentPropsWithoutRef<"h3">) => (
     <h3
-      className={`reveal ${MEASURE} mt-16 mb-4 text-xl leading-[1.3] text-on-surface`}
+      className={`reveal ${MEASURE} mt-16 mb-4 text-xl leading-[1.3] font-medium text-on-surface`}
       {...props}
     />
   ),
   p: (props: ComponentPropsWithoutRef<"p">) => (
     <p
-      className={`reveal ${MEASURE} mb-4 text-base leading-[1.3] text-on-surface`}
+      className={`reveal ${MEASURE} mb-4 text-base leading-[1.3] text-body`}
       {...props}
     />
   ),
   ul: (props: ComponentPropsWithoutRef<"ul">) => (
     <ul
-      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-disc space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
+      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-disc space-y-2 pr-6 pl-11 text-base leading-[1.3] text-body marker:text-oxley-700`}
       {...props}
     />
   ),
   ol: (props: ComponentPropsWithoutRef<"ol">) => (
     <ol
-      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-decimal space-y-2 pr-6 pl-11 text-base leading-[1.3] text-on-surface marker:text-oxley-700`}
+      className={`reveal mx-auto mb-4 w-full max-w-[800px] list-decimal space-y-2 pr-6 pl-11 text-base leading-[1.3] text-body marker:text-oxley-700`}
       {...props}
     />
   ),
@@ -286,7 +290,7 @@ export const projectMdxComponents: MDXComponents = {
   },
   blockquote: (props: ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
-      className={`reveal ${MEASURE} my-6 border-l border-oxley-700 pl-4 text-on-surface italic`}
+      className={`reveal ${MEASURE} my-6 border-l border-oxley-700 pl-4 text-body italic`}
       {...props}
     />
   ),

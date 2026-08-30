@@ -138,7 +138,7 @@ function StoryText({ block }: { block: TextBlock }) {
             {block.eyebrow}
           </p>
         ) : null}
-        <p className="text-base leading-[1.3] text-on-surface">{block.text}</p>
+        <p className="text-base leading-[1.3] text-body">{block.text}</p>
       </div>
     </div>
   );
@@ -194,9 +194,7 @@ function FeaturePhoto({
           {String(index + 1).padStart(2, "0")}
         </p>
         {photo.caption ? (
-          <p className="text-base leading-[1.3] text-on-surface">
-            {photo.caption}
-          </p>
+          <p className="text-base leading-[1.3] text-body">{photo.caption}</p>
         ) : null}
       </figcaption>
     </figure>
@@ -392,7 +390,7 @@ export function PhotoGallery({
             <figcaption className="text-center font-mono text-sm text-oxley-700">
               {active + 1} / {flat.length}
               {current.caption ? (
-                <span className="text-on-surface"> · {current.caption}</span>
+                <span className="text-body"> · {current.caption}</span>
               ) : null}
             </figcaption>
           </figure>

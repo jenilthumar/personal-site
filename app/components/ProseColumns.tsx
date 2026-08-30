@@ -31,7 +31,7 @@ export function ProseColumns({
   children: ReactNode;
 }) {
   const grid =
-    "grid max-w-[42rem] gap-8 text-[18px] leading-[1.4] tracking-[-0.16px] text-on-surface lg:max-w-none lg:grid-cols-[repeat(2,minmax(0,40rem))] lg:justify-between lg:gap-24";
+    "grid max-w-[42rem] gap-8 text-[18px] leading-[1.4] tracking-[-0.16px] text-body lg:max-w-none lg:grid-cols-[repeat(2,minmax(0,40rem))] lg:justify-between lg:gap-24";
   return (
     <div className={className ? `${grid} ${className}` : grid}>{children}</div>
   );

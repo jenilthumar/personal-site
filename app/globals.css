@@ -1,33 +1,51 @@
 @import "tailwindcss";
 
-/* ── Design tokens: near-white primary on black, with a cool muted ────────
-   #e6e6e6 is the primary foreground; white lifts headings above it, and the
-   muted token drops secondary text back — it carries a slight blue cast
-   (#767d93) rather than sitting on the gray axis, which is what keeps the
-   bracketed labels and hairlines from reading as dead gray. Hairlines and
-   placeholder fills derive from it via opacity (see bg-oxley-700/10 and
-   border-oxley-700/40 in the markup). Token names are historical (oxley = the
-   old sage green).
+/* ── Design tokens: a four-step ink ramp on black, with a cool muted ──────
+   Four levels, and each one has a job:
+
+     oxley-300   emphasis — the name, links, inline strong, active nav
+     on-surface  ink — titles, section headings, display type, figures
+     body        reading copy — paragraphs, lists, captions, blurbs
+     oxley-700   muted — bracketed labels, secondary tags, hairlines
+
+   `body` is the newest of the four and exists because the ramp used to skip
+   it. Running text sat on `on-surface`, the same value as the headings above
+   it, so a case study was one undifferentiated field of near-white at three
+   sizes — the size was the only thing ranking anything. In L* the old ramp ran
+   100 / 91 / 53: a 9-point step at the top doing the work of separating a
+   heading from its paragraph, and a 39-point one below it doing almost
+   nothing. Adding a step at 76 spreads it to 100 / 91 / 76 / 53, and the
+   heading-to-paragraph move is now the biggest of the three.
+
+   Everything below `on-surface` carries a slight blue cast (225.5°) rather
+   than sitting on the gray axis, which is what keeps the bracketed labels and
+   hairlines from reading as dead gray; `body` takes about a third of the
+   muted token's chroma, enough to belong to that side of the ramp without
+   looking tinted at paragraph size. Hairlines and placeholder fills derive
+   from the muted token via opacity (see bg-oxley-700/10 and border-oxley-700/40
+   in the markup). Token names are historical (oxley = the old sage green).
 
    Dark is the default rather than the override: it's the design the site was
    drawn in, so it's what a browser that reports no preference should get, and
    every comment in this file describes it. Light is the branch below.
 
    Nothing outside this file names a colour — not one hex anywhere in the
-   components — so the eight declarations below are the whole of both themes,
+   components — so the ten declarations below are the whole of both themes,
    plus the six flare colours that one animation borrows. */
 :root {
-  /* Both palettes, each value written once. The active four below are
-     indirections onto these, so a theme switch remaps four variables and no
+  /* Both palettes, each value written once. The active set below are
+     indirections onto these, so a theme switch remaps five variables and no
      colour is ever restated in two places to drift apart. */
   --dark-surface: #000000; /* page background — solid black            */
   --dark-oxley-300: #ffffff; /* emphasis: name, titles, footer nav, active */
-  --dark-on-surface: #e6e6e6; /* primary: body copy, links, index         */
+  --dark-on-surface: #e6e6e6; /* ink: titles, display type, figures       */
+  --dark-body: #b9bbc3; /* reading copy: paragraphs, lists, captions      */
   --dark-oxley-700: #767d93; /* muted: bracketed labels, secondary tags, borders */
 
   --light-surface: #ffffff;
   --light-oxley-300: #000000;
   --light-on-surface: #1d1d1d;
+  --light-body: #3b3c43;
   --light-oxley-700: #676d82;
 
   /* Flare colours — the six hues the statement's word animation cycles through
@@ -75,6 +93,7 @@
   --surface: var(--dark-surface);
   --oxley-300: var(--dark-oxley-300);
   --on-surface: var(--dark-on-surface);
+  --body: var(--dark-body);
   --oxley-700: var(--dark-oxley-700);
   --flare-1: var(--dark-flare-1);
   --flare-2: var(--dark-flare-2);
@@ -98,13 +117,14 @@
    Matched by contrast ratio rather than inverted, so each role keeps the
    weight it carries on black:
 
-     on-surface   #e6e6e6 on black = 16.83:1  ->  #1d1d1d on white = 16.86:1
      oxley-300    #ffffff on black = 21.00:1  ->  #000000 on white = 21.00:1
+     on-surface   #e6e6e6 on black = 16.83:1  ->  #1d1d1d on white = 16.86:1
+     body         #b9bbc3 on black = 10.96:1  ->  #3b3c43 on white = 10.98:1
      oxley-700    #767d93 on black =  5.13:1  ->  #676d82 on white =  5.14:1
 
-   The muted token is darkened along its own hue rather than re-picked, so it
-   holds the same 225.5° blue cast in both themes and the hairlines stay cool
-   instead of falling back to dead gray.
+   The muted and body tokens are darkened along their own hue rather than
+   re-picked, so both hold the same 225.5° blue cast in both themes and the
+   hairlines stay cool instead of falling back to dead gray.
 
    Two rules, in this order, because there are three situations and only two
    palettes. The system preference is honoured unless the reader has explicitly
@@ -123,6 +143,7 @@
     --surface: var(--light-surface);
     --oxley-300: var(--light-oxley-300);
     --on-surface: var(--light-on-surface);
+    --body: var(--light-body);
     --oxley-700: var(--light-oxley-700);
     --flare-1: var(--light-flare-1);
     --flare-2: var(--light-flare-2);
@@ -139,6 +160,7 @@
   --surface: var(--light-surface);
   --oxley-300: var(--light-oxley-300);
   --on-surface: var(--light-on-surface);
+  --body: var(--light-body);
   --oxley-700: var(--light-oxley-700);
   --flare-1: var(--light-flare-1);
   --flare-2: var(--light-flare-2);
@@ -151,11 +173,12 @@
 }
 
 /* Expose tokens as Tailwind v4 utilities: bg-surface, text-oxley-300,
-   text-on-surface, text-oxley-700, font-sans, font-mono. */
+   text-on-surface, text-body, text-oxley-700, font-sans, font-mono. */
 @theme inline {
   --color-surface: var(--surface);
   --color-oxley-300: var(--oxley-300);
   --color-on-surface: var(--on-surface);
+  --color-body: var(--body);
   --color-oxley-700: var(--oxley-700);
 
   --font-sans: var(--font-inter);

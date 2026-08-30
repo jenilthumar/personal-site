@@ -24,7 +24,7 @@ const components: MDXComponents = {
     <h3 className="mt-8 mb-2 text-base font-medium text-oxley-300" {...props} />
   ),
   p: (props: ComponentPropsWithoutRef<"p">) => (
-    <p className="my-4 text-base leading-[1.7] text-on-surface" {...props} />
+    <p className="my-4 text-base leading-[1.7] text-body" {...props} />
   ),
   a: ({ href = "#", ...props }: ComponentPropsWithoutRef<"a">) => {
     const external = href.startsWith("http");
@@ -44,13 +44,13 @@ const components: MDXComponents = {
   },
   ul: (props: ComponentPropsWithoutRef<"ul">) => (
     <ul
-      className="my-4 list-disc space-y-1.5 pl-5 text-base leading-[1.7] text-on-surface marker:text-oxley-700"
+      className="my-4 list-disc space-y-1.5 pl-5 text-base leading-[1.7] text-body marker:text-oxley-700"
       {...props}
     />
   ),
   ol: (props: ComponentPropsWithoutRef<"ol">) => (
     <ol
-      className="my-4 list-decimal space-y-1.5 pl-5 text-base leading-[1.7] text-on-surface marker:text-oxley-700"
+      className="my-4 list-decimal space-y-1.5 pl-5 text-base leading-[1.7] text-body marker:text-oxley-700"
       {...props}
     />
   ),
@@ -62,7 +62,7 @@ const components: MDXComponents = {
   ),
   blockquote: (props: ComponentPropsWithoutRef<"blockquote">) => (
     <blockquote
-      className="my-6 border-l border-oxley-700 pl-4 text-on-surface italic"
+      className="my-6 border-l border-oxley-700 pl-4 text-body italic"
       {...props}
     />
   ),
@@ -77,7 +77,7 @@ const components: MDXComponents = {
   ),
   pre: (props: ComponentPropsWithoutRef<"pre">) => (
     <pre
-      className="my-6 overflow-x-auto rounded-lg bg-oxley-700/10 p-4 font-mono text-sm leading-relaxed text-on-surface [&>code]:bg-transparent [&>code]:p-0"
+      className="my-6 overflow-x-auto rounded-lg bg-oxley-700/10 p-4 font-mono text-sm leading-relaxed text-body [&>code]:bg-transparent [&>code]:p-0"
       {...props}
     />
   ),
