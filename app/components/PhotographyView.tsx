@@ -1,6 +1,6 @@
 import type { WorkItem } from "@/lib/content";
 import { countPhotos } from "@/lib/content";
-import { Wordmark } from "./Wordmark";
+import { TopNav } from "./TopNav";
 import { PhotoGallery } from "./PhotoGallery";
 import { FilmSpotlight } from "./FilmSpotlight";
 import { NextWork } from "./NextWork";
@@ -18,13 +18,18 @@ export function PhotographyView({
 
   return (
     <div className="mx-auto max-w-[1920px]">
-      <header className="px-6 pt-6">
-        <Wordmark className="text-oxley-300" />
+      {/* Outside the (site) layout, so this page draws the masthead itself, on
+          the shell's own gutters — see the note in ProjectView. */}
+      <div className="px-4 pt-4 sm:px-8">
+        <TopNav />
+      </div>
+
+      <header className="px-6 pt-14">
         {/* The title block reveals; the wordmark above it doesn't — it's the
             page's chrome, and chrome holds still while content arrives. */}
         <div className="reveal mt-16 mb-16 flex max-w-[640px] flex-col gap-4 sm:mb-20">
           <div className="flex items-baseline gap-2">
-            <h1 className="text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
+            <h1 className="font-display text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
               {item.title}
             </h1>
             {count ? (

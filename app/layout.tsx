@@ -35,8 +35,18 @@ export default function RootLayout({
       {/* ── Typeface ─────────────────────────────────────────────────────────
        * Inter, served from rsms.me the way the typeface's own site does it.
        * Modern browsers get InterVariable (one file, all weights plus the opsz
-       * optical-size axis, so no separate InterDisplay face is needed); the
-       * @supports fallback in globals.css covers the rest.
+       * optical-size axis); the @supports fallback in globals.css covers the
+       * rest. The same stylesheet declares InterDisplay, which the headings
+       * over 32px take — statics, so a file per weight, fetched only once one
+       * of those headings is laid out.
+       *
+       * Those two aren't preloaded. A preload has to name the exact URL the
+       * stylesheet asks for, cache-busting query and all, and rsms.me bumps
+       * that `?v=` on its own schedule — a stale hint there is 220KB of dead
+       * weight on every view, and it fails quietly. The cost of going without
+       * is small: InterDisplay is listed after the text family, so a heading
+       * waiting on it is set in Inter rather than in a system font, and the
+       * swap is one cut of one typeface for another.
        *
        * The mono alongside it is Commit Mono, self-hosted through next/font and
        * subset to 14KB a weight; app/fonts/mono.ts records why. It rides in as a

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
 import { CaseVideo } from "./CaseVideo";
+import { cssRatio, Placeholder } from "./media-parts";
 
 /**
  * Components for a project case-study body. Text blocks (markdown headings +
@@ -23,15 +24,7 @@ const MEASURE = "mx-auto w-full max-w-[800px] px-6";
 
 // Section heading, shared by the markdown `##` mapping and <Impact> so the
 // band's heading can't drift away from the ones the body writes itself.
-const HEADING = `reveal ${MEASURE} mt-24 mb-6 text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface`;
-
-const cssRatio = (aspect = "16/9") => aspect.replace("/", " / ");
-
-function Placeholder() {
-  return (
-    <div className="h-full w-full bg-gradient-to-br from-oxley-700/25 via-oxley-700/10 to-transparent" />
-  );
-}
+const HEADING = `reveal ${MEASURE} mt-24 mb-6 font-display text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface`;
 
 /** Full-bleed image (or placeholder) at the given aspect ratio. */
 function Full({

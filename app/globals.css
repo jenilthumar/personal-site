@@ -182,6 +182,22 @@
   --color-oxley-700: var(--oxley-700);
 
   --font-sans: var(--font-inter);
+  /* InterDisplay, Inter's cut for large sizes. Applied per call site rather
+     than to `h1, h2`, because the tag says where a heading sits in the outline
+     and nothing about how big it is drawn: the same two tags cover the 56px
+     statement and a 16px label in the nav sheet, and the display cut on that
+     label is just a worse label — it's drawn tight for type that has room.
+
+     The line is 32px, which is also where Inter's opsz axis tops out. Above
+     it: the statement, both summary titles, the photography title, the case
+     study's section headings, the work section's. Below it and left alone: the
+     MDX headings, the sidebar and nav labels, the 18px section headers on
+     about and running.
+
+     The statement is the one judgement call — it clamps from 28px to 56px, so
+     a phone gets it 4px under the line. Held in the display cut anyway, since
+     swapping family at a breakpoint would shift the metrics mid-clamp. */
+  --font-display: var(--font-inter-display);
   /* Commit Mono, declared in app/fonts/mono.ts and carried on <html> from the
      root layout. Overriding Tailwind's stock --font-mono means `font-mono` is
      the whole API — no second utility to remember. The variable already ends in
@@ -192,11 +208,19 @@
 /* ── Typeface: Inter, set up the way rsms.me/inter prescribes ───────────────
    'liga' and 'calt' are opt-in in Chrome, so they're switched on explicitly.
    Browsers with variable-font support get InterVariable — one file carrying
-   every weight plus the opsz optical-size axis, which is why there's no
-   separate InterDisplay face. The family lives in --font-inter so Tailwind's
-   font-sans utility follows the same swap. */
+   every weight plus the opsz optical-size axis. The family lives in
+   --font-inter so Tailwind's font-sans utility follows the same swap.
+
+   Large headings take InterDisplay through the `font-display` utility, whose
+   note in the theme block above marks where that line falls. rsms.me
+   ships it as statics only — one file per weight, no variable version — so it
+   can't be reached by moving an axis and has to be named. It's listed ahead of
+   --font-inter rather than replacing it, which makes the text family both the
+   fallback while the static loads and the answer for any weight the Display
+   family doesn't carry. */
 :root {
   --font-inter: Inter, sans-serif;
+  --font-inter-display: InterDisplay, var(--font-inter);
   font-family: var(--font-inter);
   font-feature-settings:
     "liga" 1,
@@ -243,13 +267,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-/* Headings render at the display end of the optical-size axis: tighter
-   spacing and finer joints than the text-optimised default. */
-h1,
-h2 {
-  font-variation-settings: "opsz" 32;
 }
 
 ::selection {
@@ -475,6 +492,58 @@ h2 {
   .reveal[data-visible] {
     transition: opacity 300ms cubic-bezier(0.25, 1, 0.5, 1);
     transition-delay: calc(var(--reveal-order, 0) * 40ms);
+  }
+}
+
+/* ── The masthead over a hero ───────────────────────────────────────────────
+   A case study lays the bar on its cover rather than above it, so the page
+   opens on the whole frame the reader tapped on the home index. The ink is
+   named per project in frontmatter (`heroInk`), and the note on that field in
+   lib/content.ts is the argument for why it's declared and not computed.
+
+   Pure white and pure black, which are the two ends of this site's own ramp
+   (`--dark-oxley-300` and `--light-oxley-300`) and the only values that give
+   a photograph nothing to erode. The four-step ink ramp doesn't apply here:
+   its steps are graded against the surface, and the backdrop is a picture.
+   Everything in the bar takes the one colour, so the muted tokens that
+   separate a label from a link on the page go flat — over an image the
+   distinction the eye needs is type against picture, not type against type.
+
+   `!important` because the leaves are token utilities and a hover state
+   outranks a descendant selector; hover drops to opacity instead, which is
+   the one signal that reads the same on any backdrop.
+
+   Scoped to the bars and never the header above them, so the mobile sheet
+   stays out of it — that panel is a solid bg-surface with its own tokens, and
+   white type forced onto a white surface is an invisible menu. */
+@layer components {
+  .nav-ink-light,
+  .nav-ink-light * {
+    color: #fff !important;
+  }
+  .nav-ink-dark,
+  .nav-ink-dark * {
+    color: #000 !important;
+  }
+  .nav-ink-light a:hover,
+  .nav-ink-light button:hover,
+  .nav-ink-dark a:hover,
+  .nav-ink-dark button:hover {
+    opacity: 0.7;
+  }
+
+  /* And the frame the bar stands on before its picture has arrived.
+     A hero that names an ink has committed the bar to one colour, so the
+     placeholder underneath has to be able to carry it — the site's usual
+     `bg-oxley-700/10` is a pale grey in light mode, and a white bar on it is
+     an unreadable masthead for as long as the LCP takes. Not the ramp's
+     tokens: those flip with the theme, and this is standing in for a
+     photograph, which doesn't. */
+  .hero-under-light {
+    background-color: #111;
+  }
+  .hero-under-dark {
+    background-color: #ececec;
   }
 }
 

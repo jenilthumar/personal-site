@@ -12,6 +12,23 @@ import matter from "gray-matter";
 export type WorkCategory = "project" | "photography";
 
 /**
+ * Which layout a case study's detail page uses.
+ *
+ * `showcase` is the original: a full-bleed hero, then media at window width
+ * with prose between it. It's the right frame for work whose argument *is* the
+ * artefact — a website, an identity, a set of screens.
+ *
+ * `study` is for product work, where the argument is the reasoning and the
+ * screens are evidence for it. Same hero, then a rail of sections beside a
+ * reading column, with media sized to that column rather than the window. See
+ * StudyView.
+ *
+ * Declared per project as `format: study` in frontmatter; anything else, or
+ * nothing at all, stays on the showcase.
+ */
+export type WorkFormat = "showcase" | "study";
+
+/**
  * A photograph with its natural aspect (e.g. "3/2", "2/3", "1/1") + caption.
  * `feature` lifts it out of the contact-sheet grid: shown large and centered,
  * with its caption, as a chapter anchor.
@@ -67,12 +84,36 @@ export type WorkItem = {
   summary?: string;
   /** Whether the .mdx has body content (the project case study) below frontmatter. */
   hasBody: boolean;
+  /** Which detail-page layout this one uses. Defaults to "showcase". */
+  format: WorkFormat;
 
   // ── Project detail page ───────────────────────────────────────────────
   /** Full-bleed hero image. */
   hero?: string;
   /** Optional looping video hero (muted, autoplay); uses `hero` as its poster. */
   heroVideo?: string;
+  /**
+   * Which ink the masthead takes when it stands on this project's hero, and
+   * the switch that puts it there at all. `light` for a dark cover, `dark` for
+   * a light one; omitted, the nav sits on the page surface above the frame
+   * instead, in the site's own tokens.
+   *
+   * It's declared rather than derived because there is no honest way to derive
+   * it. A blend was the first answer — white in `mix-blend-difference`, the way
+   * the wordmark used to do it — and it works on three of the four covers here
+   * and fails on the fourth: `difference` inverts, so a backdrop near mid grey
+   * comes back as another mid grey, and Stoa's sunset landed the bar at 2.4:1.
+   * Darkening the backdrop doesn't help, because it drags the inverted type
+   * down with it. Sampling the image at build time would only move the guess
+   * earlier, and it can't see a video at all.
+   *
+   * So the person who chose the cover says which way it reads. Two things to
+   * check when setting it: the strip the bar actually occupies, which is the
+   * top ~60px and not the picture as a whole, and — for a `heroVideo` — the
+   * whole loop, since a frame that turns pale halfway through is the one that
+   * loses the nav.
+   */
+  heroInk?: "light" | "dark";
   /** Longer intro shown on the detail page (falls back to `summary`). */
   description?: string;
   sectors?: string;
@@ -126,8 +167,13 @@ export function getAllWork(): WorkItem[] {
       cover: data.cover,
       summary: data.summary,
       hasBody: content.trim().length > 0,
+      format: data.format === "study" ? "study" : "showcase",
       hero: data.hero,
       heroVideo: data.heroVideo,
+      heroInk:
+        data.heroInk === "light" || data.heroInk === "dark"
+          ? data.heroInk
+          : undefined,
       description: data.description,
       sectors: data.sectors,
       services: data.services,
@@ -165,6 +211,49 @@ export function workHref(item: Pick<WorkItem, "slug" | "category">): string {
   return item.category === "photography"
     ? `/photography/${item.slug}`
     : `/work/${item.slug}`;
+}
+
+// ── Study sections ───────────────────────────────────────────────────────
+// The rail down the left of a `study` case study, and the anchors it points at.
+
+/** One entry in a study's rail: a `##` heading of its body, in reading order. */
+export type StudySection = { id: string; label: string };
+
+/**
+ * URL fragment for a section label. Exported so the rail and the body's own h2
+ * mapping share one slugifier — two of them is two chances to disagree, and
+ * the disagreement shows up as a rail whose links go nowhere.
+ */
+export function sectionId(label: string): string {
+  return label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * The `##` headings of a case-study body, in order.
+ *
+ * Read out of the body rather than declared in frontmatter, and that is the
+ * point. The reference this format is drawn from keeps its rail in a list of
+ * its own, and the labels have already drifted from the headings they point
+ * at — the rail says "Overview" over a section headed "Problem". A rail that
+ * can only ever say what the page says cannot do that.
+ *
+ * Fenced code is stripped first. Nothing in the collection opens a code block
+ * today, but the rail shouldn't be one code sample away from listing a comment
+ * as a section.
+ */
+export function getStudySections(slug: string): StudySection[] {
+  const raw = fs.readFileSync(path.join(CONTENT_DIR, `${slug}.mdx`), "utf8");
+  const { content } = matter(raw);
+  const prose = content.replace(/^```[\s\S]*?^```/gm, "");
+
+  // `##` and not `###`: the third hash isn't a space, so it never matches.
+  return [...prose.matchAll(/^##[ \t]+(.+?)[ \t]*$/gm)].map(([, label]) => ({
+    id: sectionId(label),
+    label,
+  }));
 }
 
 // ── Home feed ────────────────────────────────────────────────────────────
@@ -208,13 +297,18 @@ function tagAttrs(tag: string): Record<string, string> {
 
 /**
  * Media blocks of a case-study body, in authored order. Bodies use a fixed
- * set of media tags (<Video>, <Full>, <Row> of <Img>), so a light scan
- * recovers them without compiling the MDX.
+ * set of media tags (<Video>, <Full>, <Figure>, <Row> of <Img>), so a light
+ * scan recovers them without compiling the MDX.
+ *
+ * <Figure> is the study format's image and belongs here for the same reason
+ * the others do: a project's feed row names media by file stem, and an image
+ * the scan can't see is an image `feed:` can't name. It defaults to the same
+ * 16/9 as <Full>, so the two agree about an unstated aspect.
  */
 function parseBodyMedia(body: string): FeedMedia[] {
   const media: FeedMedia[] = [];
   const blocks = body.matchAll(
-    /<(?:Full|Video)\b[^>]*\/>|<Row\b[\s\S]*?<\/Row>/g,
+    /<(?:Full|Video|Figure)\b[^>]*\/>|<Row\b[\s\S]*?<\/Row>/g,
   );
 
   for (const [block] of blocks) {
