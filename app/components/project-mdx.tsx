@@ -146,14 +146,13 @@ function Lede({ children }: { children?: ReactNode }) {
  * anything near the <Lede> puts the answers in a shouting match with the
  * question. See the note above FIGURE in app/(site)/running/page.tsx.
  *
- * Tracking is the one departure. That page resets it to normal, because the
- * -0.16px its rows carry is drawn for Inter and only cramps a face that is
- * already monospaced at 18px. This is a display figure at 32px, where the
- * generous advances mono is built with read as slack, so it takes a deliberate
- * -0.03em of its own rather than inheriting Inter's.
+ * Nothing departs from that page any more. This figure carried a tighter
+ * -0.03em for a while, on the argument that mono's advances read as slack once
+ * you get to 32px; the two styles drifted apart on that basis and the site now
+ * tracks the mono uniformly from globals.css.
  */
 const FIGURE =
-  "font-mono text-[clamp(1.5rem,2.33vw,2rem)] leading-none font-medium tracking-[-0.03em] text-on-surface";
+  "font-mono text-[clamp(1.5rem,2.33vw,2rem)] leading-none font-medium text-on-surface";
 
 /**
  * One figure in an <Impact> section: the number, what it measures, and where
@@ -187,7 +186,7 @@ function Stat({
       <div className="flex flex-col gap-1">
         <span className="text-base leading-[1.3] text-body">{label}</span>
         {note && (
-          <span className="font-mono text-sm leading-[1.3] tracking-normal text-oxley-700">
+          <span className="font-mono text-sm leading-[1.3] text-oxley-700">
             {note}
           </span>
         )}

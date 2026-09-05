@@ -95,7 +95,7 @@ function PhotoCell({
     // together), and the reveal composes with the image's own load fade —
     // one moves the frame, the other fills it.
     <li className="reveal group flex flex-col gap-2">
-      <span className="font-mono text-xs tracking-normal text-oxley-700 transition-colors group-hover:text-on-surface">
+      <span className="font-mono text-xs text-oxley-700 transition-colors group-hover:text-on-surface">
         {String(index + 1).padStart(2, "0")}
       </span>
       <button
@@ -134,7 +134,7 @@ function StoryText({ block }: { block: TextBlock }) {
     <div className="reveal px-6">
       <div className="flex max-w-[640px] flex-col gap-4">
         {block.eyebrow ? (
-          <p className="font-mono text-sm tracking-wide text-oxley-700 uppercase">
+          <p className="font-mono text-sm text-oxley-700 uppercase">
             {block.eyebrow}
           </p>
         ) : null}
@@ -190,7 +190,7 @@ function FeaturePhoto({
         )}
       </button>
       <figcaption className="flex max-w-[640px] flex-col items-center gap-1 text-center">
-        <p className="font-mono text-xs tracking-normal text-oxley-700">
+        <p className="font-mono text-xs text-oxley-700">
           {String(index + 1).padStart(2, "0")}
         </p>
         {photo.caption ? (

@@ -134,7 +134,7 @@ export function FolderGroup({
         // same mono at the same size, `Projects [4]` is one string with one
         // space in it, and the pair can't fall out of alignment the way a
         // baseline-matched 16px span against a 32px heading did.
-        <h2 className="font-mono text-base leading-[1.2] tracking-normal text-oxley-700">
+        <h2 className="font-mono text-base leading-[1.2] text-oxley-700">
           {label} [{items.length}]
         </h2>
       ) : (

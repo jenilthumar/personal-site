@@ -34,7 +34,7 @@ export const metadata = {
  * the opening line.
  */
 const FIGURE =
-  "font-mono text-[clamp(1.5rem,2.33vw,2rem)] font-medium leading-none tracking-normal text-on-surface";
+  "font-mono text-[clamp(1.5rem,2.33vw,2rem)] font-medium leading-none text-on-surface";
 
 /** A single note, held to one column's measure rather than the full width. */
 const NOTE = "max-w-[40rem] text-[18px] leading-[1.4] tracking-[-0.16px]";
@@ -45,7 +45,7 @@ const NOTE = "max-w-[40rem] text-[18px] leading-[1.4] tracking-[-0.16px]";
  * and needs none. So is `tabular-nums` wherever these land: every figure in
  * this face is the same width by construction.
  */
-const LABEL = "font-mono tracking-normal";
+const LABEL = "font-mono";
 
 /**
  * The bracketed qualifier beside a section title. A step below the header's

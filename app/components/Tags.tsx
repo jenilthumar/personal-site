@@ -16,7 +16,7 @@ export function Tags({
 
   return (
     <span
-      className={`flex items-center gap-2 font-mono tracking-normal text-oxley-700 ${className}`}
+      className={`flex items-center gap-2 font-mono text-oxley-700 ${className}`}
     >
       {tags.map((tag, index) => (
         <Fragment key={tag}>

@@ -115,7 +115,7 @@ export default function AboutPage() {
                 <span className="truncate font-medium text-on-surface">
                   {trek.title}
                 </span>
-                <span className="hidden shrink-0 font-mono text-base tracking-normal text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
+                <span className="hidden shrink-0 font-mono text-base text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
                   [{trek.tags[0]}]
                 </span>
               </h2>

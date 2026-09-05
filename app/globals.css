@@ -182,11 +182,11 @@
   --color-oxley-700: var(--oxley-700);
 
   --font-sans: var(--font-inter);
-  /* Ioskeley, declared in app/fonts/mono.ts and carried on <html> from the root
-     layout. Overriding Tailwind's stock --font-mono means `font-mono` is the
-     whole API — no second utility to remember. The variable already ends in a
-     real mono stack, so the fallback is covered. */
-  --font-mono: var(--font-ioskeley);
+  /* Commit Mono, declared in app/fonts/mono.ts and carried on <html> from the
+     root layout. Overriding Tailwind's stock --font-mono means `font-mono` is
+     the whole API — no second utility to remember. The variable already ends in
+     a real mono stack, so the fallback is covered. */
+  --font-mono: var(--font-commit-mono);
 }
 
 /* ── Typeface: Inter, set up the way rsms.me/inter prescribes ───────────────
@@ -205,6 +205,24 @@
 @supports (font-variation-settings: normal) {
   :root {
     --font-inter: InterVariable, sans-serif;
+  }
+}
+
+/* ── The mono never inherits Inter's tracking ──────────────────────────────
+   letter-spacing inherits, and the rows these labels sit in carry Inter's:
+   -0.16px on the 18px rows, -0.01em on the nav and headings. A face that is
+   already monospaced was spaced when it was drawn, so a negative value it
+   never asked for only cramps it.
+
+   One rule rather than a tracking class on each call site, which is what this
+   was, and it had already drifted: eleven reset to normal, two widened, the
+   figure in a case study pulled to -0.03em while the identical figure on the
+   running page did not, and five said nothing and took whatever the row above
+   them carried. It sits in `components` so a utility still outranks it, if an
+   element ever earns the exception. */
+@layer components {
+  .font-mono {
+    letter-spacing: normal;
   }
 }
 

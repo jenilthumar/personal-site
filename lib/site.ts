@@ -36,8 +36,12 @@ export const site = {
     url: "https://www.robotostudio.com",
   },
 
-  /** Tenure line, styled in the dimmed token. */
-  dateRange: "May[25] ⎯ Present",
+  /** Tenure line, styled in the dimmed token. The separator is an em dash and
+      wants to stay one: Inter carries no glyph past it that's any longer, so a
+      more rule-like character (U+23AF, the two- and three-em dashes) drops to a
+      system font for that one character and lands thinner and higher than the
+      text around it. */
+  dateRange: "May[25] — Present",
 
   /**
    * Where the résumé lives — a media path, resolved through `mediaUrl` at the

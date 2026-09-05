@@ -38,8 +38,8 @@ export default function RootLayout({
        * optical-size axis, so no separate InterDisplay face is needed); the
        * @supports fallback in globals.css covers the rest.
        *
-       * The mono alongside it is Ioskeley, self-hosted through next/font and
-       * subset to 11KB a weight; app/fonts/mono.ts records why. It rides in as a
+       * The mono alongside it is Commit Mono, self-hosted through next/font and
+       * subset to 14KB a weight; app/fonts/mono.ts records why. It rides in as a
        * CSS variable rather than a className because it dresses the metadata
        * layer, not the page — nothing inherits it by default.
        *

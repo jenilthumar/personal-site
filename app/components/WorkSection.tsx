@@ -179,17 +179,26 @@ function Entry({
                 {item.title}
               </span>
               {/* The qualifier is spec, not sentence, so it takes the mono — but
-                a step down at 16px, not the row's 18. Mono set at the row's own
-                size overpowers the title it qualifies: size-adjust lifts it 5%
-                and the fixed advance stretches it another 30. The brackets lose
-                their inner spaces for the same reason — a space here is a full
-                11px advance where Inter's was 5 — and it matches the section
-                count above and the unpadded [30] on the photography sets.
+                a step down at 16px, not the row's 18. size-adjust pins the mono
+                to Inter's x-height, so at the row's own size the two stand
+                exactly as tall and nothing ranks the qualifier under the title
+                it qualifies; 16 against 18 leaves it at nine-tenths, short
+                enough to read as subordinate and not so short it reads as a
+                footnote. Width is the other half: a fixed advance runs about a
+                fifth wider than Inter's average across these titles, so
+                [Web & Visual Design] is five times the width of a title like
+                Shilp even after the step down. 17px lands on the same x-height
+                as 16 and only makes the long qualifiers heavier.
 
-                Tracking resets because the row's -0.16px is drawn for Inter and
-                only cramps a face that's already monospaced. */}
+                The brackets lose their inner spaces for the same reason — a
+                space here is a 10px advance where Inter's is 5 — and it matches
+                the section count above and the unpadded [30] on the photography
+                sets.
+
+                The row's -0.16px doesn't reach it: globals.css resets tracking
+                for every mono on the site, and the why lives there. */}
               {qualifier && (
-                <span className="hidden shrink-0 font-mono text-base tracking-normal text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
+                <span className="hidden shrink-0 font-mono text-base text-oxley-700 transition-colors group-hover/project:text-on-surface sm:inline">
                   [{qualifier}]
                 </span>
               )}
@@ -274,7 +283,7 @@ export function WorkSection({
         className="reveal flex items-start text-[clamp(2rem,3.49vw,3rem)] leading-[1.3] text-on-surface"
       >
         {title}
-        <span className="ml-[0.15em] font-mono text-[0.5em] tracking-normal text-oxley-700">
+        <span className="ml-[0.15em] font-mono text-[0.5em] text-oxley-700">
           [{items.length}]
         </span>
       </h2>
