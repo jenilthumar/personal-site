@@ -42,7 +42,7 @@ export function FilmSpotlight({
   return (
     <section className="px-6">
       <div className="mx-auto flex max-w-[1120px] flex-col gap-3">
-        <p className="font-mono text-sm tracking-wide text-oxley-700 uppercase">
+        <p className="font-mono text-sm text-oxley-700 uppercase">
           The film
         </p>
         <div className="relative aspect-video w-full overflow-hidden bg-oxley-700/10">

@@ -256,7 +256,7 @@ export function MobileNav({
               navigation, so the address carries the emphasis and the label
               stays muted. */}
           <div className="mt-auto flex flex-col gap-2 border-t border-oxley-700/25 pt-5">
-            <p className="font-mono text-base leading-[1.2] tracking-normal text-oxley-700">
+            <p className="font-mono text-base leading-[1.2] text-oxley-700">
               Get in touch
             </p>
             <a
