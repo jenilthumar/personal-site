@@ -108,11 +108,7 @@ function getSnapshot(): Theme {
 const getServerSnapshot = (): Theme => "dark";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const theme = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const next: Theme = theme === "dark" ? "light" : "dark";
   const [turns, setTurns] = useState(0);
 
@@ -153,9 +149,14 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       aria-label={`${theme === "dark" ? "Dark" : "Light"} theme. Switch to ${next}`}
       title={`Switch to ${next} theme`}
       // 44px of target on a phone bar, 32 on the wide one, in both cases far
-      // more than the 16px mark inside it — and pulled back out of the layout
-      // by the negative margin so the disc's own edge, not its padding, lands
-      // on the right edge everything else in the row is aligned to.
+      // more than the 16px mark inside it.
+      //
+      // The pull-out is `lg:` only, because it isn't a property of the switch
+      // — it's a property of being the last control on the bar, and only the
+      // wide bar ends with this one. Below `lg` the menu button sits to its
+      // right and carries its own; a pull-out here as well would drag that
+      // button 14px left and overlap two 44px targets, which is the one
+      // mis-tap in this corner worth designing against.
       //
       // Muted, and it's the one thing here that took a second look. Set in the
       // primary ink it matched the nav words on paper and outweighed them on
@@ -165,7 +166,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       // it's what the old bracketed toggle wore, and it still clears 5.1:1 —
       // well past the 3:1 a mark this size is held to. The hover is what makes
       // it a control: it comes up to full ink under the pointer.
-      className={`-mr-3.5 flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-oxley-700 hover:text-on-surface lg:-mr-2 lg:h-8 lg:w-8 ${className}`}
+      className={`flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-oxley-700 hover:text-on-surface lg:-mr-2 lg:h-8 lg:w-8 ${className}`}
     >
       {/* Two nested spans because the press and the turn are two different
           gestures on two different clocks. Outer: the compression under a
@@ -178,7 +179,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       <span className="flex motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out-quart motion-safe:active:scale-[0.86]">
         <span
           className="flex motion-safe:transition-transform motion-safe:duration-[400ms] motion-safe:ease-detent"
-          style={{ transform: `rotate(calc(var(--toggle-turn) + ${turns}deg))` }}
+          style={{
+            transform: `rotate(calc(var(--toggle-turn) + ${turns}deg))`,
+          }}
         >
           {/* A ring with one half filled in: the contrast mark, which is the
               one icon for this that doesn't have to pick a side. A sun and a

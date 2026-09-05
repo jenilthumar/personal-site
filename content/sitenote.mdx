@@ -1,6 +1,7 @@
 ---
 title: "Sitenote"
 category: "project"
+format: "study"
 date: "2025-02-12"
 tags: ["Product design", "Site Management"]
 cover: "work/sitenote/cover-210.webp"
@@ -11,19 +12,140 @@ sectors: "Real Estate"
 services: "Product Design"
 role: "Founder & Product Designer"
 timeline: "3 Months"
+team: "Solo designer, with engineering"
 client: "In-house product"
 url: "https://sitenote.in"
 hero: "work/sitenote/cover-210.webp"
+heroInk: "light"
 feed:
   - [02-home-screen, 05-feature-highlight]
   - [01-hero-thumbnail, 04-mobile-carousel, 06-investors-deck]
 ---
 
-<Full src="work/sitenote/04-mobile-carousel.webp" alt="Sitenote mobile screens" />
+## Overview
 
 <Lede>What does it take to move a construction business off WhatsApp?</Lede>
 
-<Impact>
+I founded Sitenote and designed it, and I used it every day myself. That kept the loop to about a day: draw something in the morning, find out by the evening whether it held up.
+
+The daily design demos and the weekly stakeholder meeting did more for it than anything else on the project. They kept me close to what the client needed, and to the engineering constraints behind every decision.
+
+<Figure
+  src="work/sitenote/01-hero-thumbnail.webp"
+  alt="Three Sitenote screens: the day's tasks, a workspace's channel list, and the unit list for a project"
+  caption="The day's tasks, the channel list a workspace opens on, and a project's units."
+/>
+
+## Problem
+
+<Lede>Real estate and construction run on WhatsApp threads and phone calls.</Lede>
+
+That holds fine for two people. Put a sales team, an office and a site crew on the same project and it stops holding.
+
+Messages get buried. Nobody's certain who approved what. A property gets marked sold in one thread and the person who needed to know finds out days later.
+
+There's also nowhere central to look. Customer records sit in old chats. The sales pipeline lives in one person's head, which makes that person the bottleneck for every question about it. The office stays a step behind whatever is happening on site.
+
+Talking it through, it came apart into five problems that fed each other:
+
+- WhatsApp has no structure to hold any of this
+- Site and office work off different information
+- Nothing is searchable once the thread scrolls past
+- Customer records are scattered across people's phones
+- Nobody can see the sales pipeline
+
+## Research
+
+I started with my uncle, who has spent twenty years in construction and real estate. Growing up around the business gave me the vocabulary, not the problem. In-person interviews gave me the problem, and I kept them running the whole way through instead of treating research as a phase that closes.
+
+<Lede>Three findings did more to shape the product than the feature list did.</Lede>
+
+<Cards>
+  <Card title="Everyone wanted fewer calls">
+    Nobody asked for a platform. They wanted to stop repeating themselves.
+  </Card>
+  <Card title="No experience of software like this">
+    Site workers had never used enterprise software of any kind. Whatever I drew had to be legible to someone whose only reference for an app was WhatsApp.
+  </Card>
+  <Card title="Nobody wanted all of it">
+    Each role wanted the two or three things their job actually needed, and treated the rest as clutter.
+  </Card>
+</Cards>
+
+## Decisions
+
+<Lede>Nobody wanted all five features, so nobody had to see all five.</Lede>
+
+### Five features, shown as channels
+
+Not modules, not a dashboard with a nav rail. Channels, because that's the shape WhatsApp had already taught this audience. Announcement, Tasks, Material, Inquiry-record and Booking, under a heading that just says Channels. So a new user never had to learn an information architecture, just five names.
+
+<Figure
+  src="work/sitenote/02-home-screen.webp"
+  aspect="2124/2582"
+  width="text"
+  alt="The Sitenote workspace on a phone: five channels listed under a Channels heading, with Home, Activity and Team in the bottom bar"
+  title="Home, for every role"
+  caption="Five names under one heading, and three places in the bottom bar. Nothing else to learn before you can use it."
+/>
+
+### Three roles rather than one app
+
+Since nobody wanted all five, the product ships as three views. Admin, office and site each see the channels their job needs, with permissions cut the same way.
+
+A site worker opens Sitenote to the channels their job needs and never sees the rest. I think that's most of the difference between software people use and software people are told to use.
+
+### Material Design 3, because WhatsApp got there first
+
+Borrowing a language they already read fluently meant onboarding could be about the work instead of the interface. It cost nothing to decide and saved a lot of explaining later.
+
+### Booking, where the money actually moves
+
+Research made it obvious that booking and sales had the most to gain from being centralised. Project details, property listings and customer records sit in one place with the account history attached, and every listing carries its own message thread, so the conversation about a property lives on the property instead of in a group chat.
+
+The pipeline turned into something you could look at instead of something you had to ask someone about.
+
+<Figure
+  src="work/sitenote/04-mobile-carousel.webp"
+  alt="Sitenote screens across the channels: the booking list, a payment schedule, a customer record with its message thread, unit filters, material entries and tasks"
+  caption="A payment schedule, a customer record with its own thread, and the filters over a project's units."
+/>
+
+### Inquiry records, so a lead isn't one person's contact list
+
+A buyer rings someone, or messages them, or turns up at the site office. Whoever takes it owns that lead from then on and it lives in their phone. If they're away, or they leave, the lead goes with them. That is the scattered customer records problem at its most expensive, because a lead is the start of everything the booking channel later records.
+
+So every inquiry became a record of its own, with its own thread, in the shared workspace instead of a private chat. Anyone whose role allows it can see where a lead got to and pick it up mid-conversation.
+
+<Outcome>
+Five in six inquiries grew a conversation, against under a third of listings. That reads about right: a live buyer is something people need to talk about, and a filed unit usually isn't. Inquiry records ended up the second most used channel in the product, ahead of the ones I had assumed would carry more.
+</Outcome>
+
+### Activity, so nobody has to keep checking
+
+You can't open an app every five minutes to see whether a teammate marked a property sold. WhatsApp had trained everyone to do exactly that.
+
+Activity isn't one of the channels. It sits in the bottom bar beside Home and Team, because it isn't a place work lives, it's a place you check. Updates come to you there, scoped to the projects and listings you're actually on, so staying current stopped being a job in itself.
+
+<Figure
+  src="work/sitenote/05-feature-highlight.webp"
+  alt="Sitenote feature board: the dark channel list, an Activity feed showing a unit changed to Sold, a sales breakdown of total, sold and unsold properties, and the booking grid syncing across the workspace"
+  caption="Activity, and the sales breakdown it feeds."
+/>
+
+### Tasks, so work stops living in someone's head
+
+Admins create and assign day-to-day work to office and site users, with progress tracked on the task itself instead of reconstructed from a call.
+
+<Outcome>
+Fifty-six tasks in two years. Most of them were people assigning work to themselves, only two ever reached a site user, and half never got closed at all. The ones that did took a median of about three months. The channel I drew as a delegation tool turned into a private to-do list.
+</Outcome>
+
+## Impact
+
+<Lede>Sitenote has outlasted the company it was built for.</Lede>
+
+<Stats>
   <Stat
     value="23 months"
     label="Unbroken use at the first client"
@@ -39,97 +161,22 @@ feed:
     label="Companies running on it"
     note="First use Apr 2024, Apr 2026, Jul 2026; all active Aug 2026"
   />
-</Impact>
+</Stats>
 
-## The problem
+It went live on the web in April 2024 and ran for twenty-three months without a gap at the company it was built for. Sangani in construction and Opera in real estate worked out of the same workspace, and fourteen people were still active in it in February 2026.
 
-Real estate and construction run on WhatsApp threads and phone calls. That holds fine for two people. Put a sales team, an office and a site crew on the same project and it stops holding.
+That March it thinned out to one user. Two more companies had been set up on Sitenote by then, and they carry most of the current work. All three workspaces were active in August 2026.
 
-Messages get buried. Nobody's certain who approved what. A property gets marked sold in one thread and the person who needed to know finds out days later.
+<Figure
+  src="work/sitenote/06-investors-deck.webp"
+  alt="Slides from the Sitenote investor deck: the problem map, the solution, how the idea was validated, the target audience, the SaaS model, and a progress timeline"
+  caption="The investor deck, put together after the product was already running at the first client."
+/>
 
-There's also nowhere central to look. Customer records sit in old chats. The sales pipeline lives in one person's head, which makes that person the bottleneck for every question about it. The office stays a step behind whatever is happening on site.
+## Reflection
 
-Talking it through, it came apart into five problems that fed each other:
+<Lede>Two of the five channels carried 98% of the work.</Lede>
 
-- WhatsApp has no structure to hold any of this
-- Site and office work off different information
-- Nothing is searchable once the thread scrolls past
-- Customer records are scattered across people's phones
-- Nobody can see the sales pipeline
-
-<Row>
-  <Img src="work/sitenote/02-home-screen.webp" aspect="2124/2582" alt="Sitenote home screen" />
-  <Img src="work/sitenote/03-ipad-mockup.webp" aspect="2124/2582" alt="Sitenote on iPad" />
-</Row>
-
-## What research changed
-
-I started with my uncle, who has spent twenty years in construction and real estate. Growing up around the business gave me the vocabulary, not the problem. In-person interviews gave me the problem, and I kept them running the whole way through instead of treating research as a phase that closes.
-
-Three findings did more to shape the product than the feature list did.
-
-Everyone wanted fewer calls, not more software. Nobody asked for a platform. They just wanted to stop repeating themselves.
-
-Site workers had no experience with enterprise software of any kind. Whatever I drew had to be legible to someone whose entire reference for an app was WhatsApp.
-
-And nobody wanted all of it. Each role wanted the two or three things their job actually needed, and treated the rest as clutter.
-
-<Full src="work/sitenote/05-feature-highlight.webp" alt="Sitenote feature highlight" />
-
-## The decisions
-
-### Five features, shown as channels
-
-Not modules, not a dashboard with a nav rail. Channels, because that's the shape WhatsApp had already taught this audience. Announcement, Tasks, Material, Inquiry-record and Booking, under a heading that just says Channels. So a new user never had to learn an information architecture, just five names.
-
-### Three roles rather than one app
-
-Since nobody wanted all five, the product ships as three views. Admin, office and site each see the channels their job needs, with permissions cut the same way.
-
-A site worker opens Sitenote to the channels their job needs and never sees the rest. I think that's most of the difference between software people use and software people are told to use.
-
-### Material Design 3, because WhatsApp got there first
-
-Borrowing a language they already read fluently meant onboarding could be about the work instead of the interface. It cost nothing to decide and saved a lot of explaining later.
-
-### Booking, where the money actually moves
-
-Research made it obvious that booking and sales had the most to gain from being centralized. Project details, property listings and customer records sit in one place with the account history attached, and every listing carries its own message thread, so the conversation about a property lives on the property instead of in a group chat.
-
-The pipeline turned into something you could look at instead of something you had to ask someone about.
-
-### Inquiry records, so a lead isn't one person's contact list
-
-A buyer rings someone, or messages them, or turns up at the site office. Whoever takes it owns that lead from then on and it lives in their phone. If they're away, or they leave, the lead goes with them. That is the scattered customer records problem at its most expensive, because a lead is the start of everything the booking channel later records.
-
-So every inquiry became a record of its own, with its own thread, in the shared workspace instead of a private chat. Anyone whose role allows it can see where a lead got to and pick it up mid-conversation.
-
-This is where the thread turned out to land hardest, though I only found that out later. Five in six inquiries grew a conversation, against under a third of listings. That reads about right: a live buyer is something people need to talk about, and a filed unit usually isn't. Inquiry records ended up the second most used channel in the product, ahead of the ones I had assumed would carry more.
-
-### Activity, so nobody has to keep checking
-
-You can't open an app every five minutes to see whether a teammate marked a property sold. WhatsApp had trained everyone to do exactly that.
-
-Activity isn't one of the channels. It sits in the bottom bar beside Home and Team, because it isn't a place work lives, it's a place you check. Updates come to you there, scoped to the projects and listings you're actually on, so staying current stopped being a job in itself.
-
-### Tasks, so work stops living in someone's head
-
-Admins create and assign day-to-day work to office and site users, with progress tracked on the task itself instead of reconstructed from a call.
-
-That was the intent, and it isn't what happened. Fifty-six tasks in two years. Most of them were people assigning work to themselves, only two ever reached a site user, and half never got closed at all. The ones that did took a median of about three months. The channel I drew as a delegation tool turned into a private to-do list, and mostly went unused.
-
-## Where it landed
-
-Sitenote went live on the web in April 2024 and ran for twenty-three months without a gap at the company it was built for. Sangani in construction and Opera in real estate work out of the same workspace, and fourteen people were still active in it in February 2026.
-
-That March it thinned out to one user. Two more companies had been set up on Sitenote by then, and they carry most of the current work, so the product has outlasted the client it was made for. All three workspaces were active in August 2026.
-
-<Full src="work/sitenote/06-investors-deck.webp" alt="Sitenote investor deck" />
-
-## What I'd do differently
-
-Building this as the founder and its first user taught me more than a brief could have. The daily design demos and weekly stakeholder meetings did the most for quality. They kept me close to what clients needed and to the engineering constraints sitting behind every decision.
-
-The mistake was spread, and pulling the numbers two years on put a figure on it. Booking took 83% of everything anyone did in the product and the inquiry records took most of what was left, so two of the five channels carried 98% of the work. Tasks, material and announcements split the other 2% between them. Material was used by one person and then by nobody.
+The mistake was spread, and pulling the numbers two years on put a figure on it. Booking took 83% of everything anyone did in the product and inquiry records took most of what was left. Tasks, material and announcements split the other 2% between them. Material was used by one person and then by nobody.
 
 Booking was the feature the business actually ran on, and I let the secondary channels pull focus before it was locked. Given it again, I'd ship booking on its own and get it into daily use before touching anything else.

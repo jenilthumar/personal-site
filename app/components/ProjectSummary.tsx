@@ -30,7 +30,7 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
     // simply being the LCP) is its entrance.
     <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
       <div className="reveal flex max-w-[480px] flex-col gap-4">
-        <h1 className="text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
+        <h1 className="font-display text-[32px] leading-[1.3] font-medium tracking-[-0.01em] text-on-surface">
           {item.title}
         </h1>
         {description && (

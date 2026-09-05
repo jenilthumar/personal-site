@@ -10,15 +10,19 @@ import { site } from "@/lib/site";
  * and it keeps Inter for the same reason: everything around it is mono, so the
  * one line meant to be read rather than scanned is the one that isn't.
  *
- * No top margin: the layout already spaces its children, so the rule sits the
- * same distance below the last row as the projects sit from each other.
+ * No rule above it, and no top margin either. The layout already spaces its
+ * children, so the footer sits the same distance below the last row as the
+ * projects sit from each other — which is the separation, and a hairline on
+ * top of it was drawing a line the spacing had already drawn. The 48px of
+ * padding that used to hold the content off that rule stays: it's what keeps
+ * the small print from reading as one more row of the page above it.
  */
 export function Footer() {
   const email = site.social.find((link) => link.href.startsWith("mailto:"));
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-oxley-700/40 pt-12 pb-6 text-sm leading-[1.4]">
+    <footer className="pt-12 pb-6 text-sm leading-[1.4]">
       <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between sm:gap-12">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-oxley-700">Get in touch</p>

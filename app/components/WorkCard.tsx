@@ -64,10 +64,9 @@ export function WorkCard({
           </span>
           <Tags tags={item.tags} className="shrink-0 justify-end whitespace-nowrap" />
         </div>
-        {/* What changed because the work shipped. Sits under the title so a
-            result reads before the click, the way the case study opens with
-            one — muted, since the title is still the card's line. */}
-        {item.outcome && <p className="text-oxley-700">{item.outcome}</p>}
+        {/* The outcome line is parked here too, for the reason the home index
+            parked it — see the note in WorkSection. The field is untouched;
+            this card just doesn't print it. */}
       </div>
     </Link>
   );

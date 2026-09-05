@@ -17,8 +17,10 @@ import { StatementFlare } from "./StatementFlare";
  * track the size continuously instead of stepping at a breakpoint. At exactly
  * 56px they resolve to 58.8px and -2.4px, so the drawn size is unchanged.
  *
- * The opsz pin is what `h1, h2` get in globals.css, restated here so a
- * statement set as a paragraph renders at the same display end of the axis.
+ * `font-display` is InterDisplay, Inter's cut for large sizes. Every heading
+ * over 32px carries it; see the note on the token in globals.css. It's on the
+ * statement rather than on `h1, h2` because the statement is a paragraph on
+ * the pages where it isn't the heading, and the size is the same either way.
  *
  * `text-balance` evens the line lengths so the last line isn't left short.
  * It's a browser hint rather than a guarantee: Blink only balances up to six
@@ -28,7 +30,7 @@ import { StatementFlare } from "./StatementFlare";
  * conspicuous when the lines above it are long.
  */
 const STATEMENT =
-  "max-w-[1376px] py-2.5 text-[clamp(1.75rem,4.07vw,3.5rem)] font-medium text-balance leading-[calc(0.9em_+_8.4px)] tracking-[calc(1.28px_-_0.0658em)] text-on-surface [font-variation-settings:'opsz'_32]";
+  "max-w-[1376px] py-2.5 text-[clamp(1.75rem,4.07vw,3.5rem)] font-medium text-balance leading-[calc(0.9em_+_8.4px)] tracking-[calc(1.28px_-_0.0658em)] font-display text-on-surface";
 
 /**
  * Word flare: a colour runs through one phrase of the statement, a word at a

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { site } from "@/lib/site";
-import { ChevronMark } from "./PixelMarks";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   emailLink,
@@ -13,6 +12,7 @@ import {
   SheetRow,
   type NavItem,
 } from "./nav-parts";
+import type { NavInk } from "./TopNavBar";
 
 /**
  * The masthead below `lg`: a 44px bar, and a sheet behind it.
@@ -26,9 +26,9 @@ import {
  * avoid. The bar costs 44px and the work starts 163px sooner.
  *
  * The sheet opens *under* the bar rather than over it, so the name and the
- * toggle never move — "Menu" becomes "Close" in place and the panel fills in
- * behind. That's also why there's no second close button and no repeated
- * wordmark: the bar was never covered, so it doesn't need reprinting.
+ * toggle never move — the menu mark folds into a cross in place and the panel
+ * fills in behind. That's also why there's no second close button and no
+ * repeated wordmark: the bar was never covered, so it doesn't need reprinting.
  *
  * Inside, it's the same index the wide bar draws, from the same file — the old
  * tiles were a second way of drawing the same four destinations, and the
@@ -51,12 +51,91 @@ import {
  * bug that makes sheets feel broken), on Escape, and with the page behind it
  * held still while it's open.
  */
+/**
+ * The bar's control: two rules that fold into a cross.
+ *
+ * It replaced the word "Menu" turning into the word "Close" with a chevron
+ * beside it. The word was honest and it was also the widest thing in the
+ * corner — a label, a mark and a dial, three objects for two controls — and
+ * "Close" is a longer word than "Menu", so the switch beside it shifted every
+ * time the sheet opened. Two rules cost 18px and never change width.
+ *
+ * Two and not the usual three. A cross has two strokes, so a three-rule mark
+ * has to get rid of one on the way, and the middle one collapsing is the only
+ * part of the move that isn't the shape rearranging itself — it's a shape
+ * being swapped for a different shape while you look away. With two, every
+ * stroke that starts is a stroke that lands, and the mark is the same object
+ * before and after. Same argument the theme switch makes about being one disc
+ * that turns rather than a sun and a moon taking turns.
+ *
+ * ── The fold ────────────────────────────────────────────────────────────────
+ * Two moves, not one. The rules travel to the middle line first, then turn;
+ * closing turns them back before they part. Run together they read as a flip —
+ * two bars pivoting through each other on their way somewhere — and running
+ * them in order is the difference between a mark that changes and a mark that
+ * folds. Each leg is 200ms and the second starts at 100, so they overlap by
+ * half and the whole thing is 300ms, which is a control's budget rather than
+ * an animation's.
+ *
+ * That's a span per rule and a span inside it, for the same reason the theme
+ * switch nests two: travel and turn are on separate clocks, and one element
+ * can hold two transforms but not two transitions.
+ *
+ * ease-out-quart throughout — the house curve, because this is a thing the
+ * reader pressed. Nothing here gets the detent the switch has: a detent is for
+ * something that lands in a notch, and a cross is a shape, not a position.
+ *
+ * Geometry: an 8.5px box, two 1.5px rules on its top and bottom edges. Half of
+ * 8.5 less half a rule is 3.5, which is the travel — far enough that the two
+ * land on one line and the cross is a cross rather than a very sharp X.
+ *
+ * Only the transitions are motion-safe. The transforms themselves aren't, so a
+ * reader who has asked for less motion still gets a cross when the sheet is
+ * open; they just get it in the frame the tap landed on.
+ */
+function MenuMark({ open }: { open: boolean }) {
+  // One curve and one duration for both legs of the fold; only the delay
+  // differs, and that's the whole mechanism. Kept off the sizing classes so
+  // there's nothing for Tailwind to have to break a tie about.
+  const glide =
+    "motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out-quart";
+  const rule = "absolute inset-x-0 h-[1.5px]";
+  const bar = `block h-full w-full bg-current ${glide}`;
+
+  return (
+    <span aria-hidden="true" className="relative block h-[8.5px] w-[18px]">
+      <span
+        className={`${rule} top-0 ${glide} ${
+          open ? "translate-y-[3.5px]" : "motion-safe:delay-100"
+        }`}
+      >
+        <span
+          className={`${bar} ${open ? "rotate-45 motion-safe:delay-100" : ""}`}
+        />
+      </span>
+
+      <span
+        className={`${rule} top-[7px] ${glide} ${
+          open ? "-translate-y-[3.5px]" : "motion-safe:delay-100"
+        }`}
+      >
+        <span
+          className={`${bar} ${open ? "-rotate-45 motion-safe:delay-100" : ""}`}
+        />
+      </span>
+    </span>
+  );
+}
+
 export function MobileNav({
   projects,
   photography,
+  ink,
 }: {
   projects: NavItem[];
   photography: NavItem[];
+  /** Set when the bar is over a hero. The bar takes it; the sheet never does. */
+  ink?: NavInk;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -111,7 +190,11 @@ export function MobileNav({
   return (
     <div className="lg:hidden">
       {/* Sits above the sheet so the toggle stays live and the name stays put. */}
-      <div className="relative z-60 flex h-11 items-center justify-between gap-4 text-base leading-[1.2]">
+      <div
+        className={`relative z-60 flex h-11 items-center justify-between gap-4 text-base leading-[1.2] ${
+          ink ? `nav-ink-${ink}` : ""
+        }`}
+      >
         {/* Outside the sheet, so it isn't covered by closeOnLink. Tapping it
             from the home page is the case that exposed all of this: it routes
             to where you already are, so nothing changes and the sheet used to
@@ -130,31 +213,13 @@ export function MobileNav({
         </Link>
 
         <div className="flex items-center">
-          <button
-            ref={toggle}
-            type="button"
-            onClick={() => setOpen((wasOpen) => !wasOpen)}
-            aria-expanded={open}
-            aria-controls="site-menu"
-            className="flex h-11 items-center gap-1.5 pl-3 font-medium text-on-surface hover:text-oxley-300"
-          >
-            {open ? "Close" : "Menu"}
-            {/* The chevron turns rather than swapping for a second glyph. It
-                travels, so it waits for motion-safe; the label alone carries
-                the state otherwise. */}
-            <ChevronMark
-              className={`motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out-quart ${
-                open ? "rotate-90" : ""
-              }`}
-            />
-          </button>
-
-          {/* Past Menu rather than before it, so the switch is on the same
-              edge here as it is on the wide bar and the two layouts agree
-              about where it lives. It costs Menu the corner, which is the one
-              argument against — but Menu is a word 44px tall with the whole
-              gap to the wordmark behind it, and it stays the easiest thing in
-              the bar to hit either way.
+          {/* Before Menu rather than after it. The wide bar puts the switch
+              last because the switch is the last thing on that bar; here the
+              last thing is the menu, and the corner belongs to the control the
+              reader is actually reaching for. On a phone the far corner is
+              also the easiest thing on the bar to hit without moving your
+              hand, and that shouldn't be spent on the button you press twice
+              a year.
 
               It's in the bar and not in the sheet because the sheet is a
               height budget (see the panel below) and this is the one control
@@ -162,13 +227,40 @@ export function MobileNav({
               Somewhere you have to open a menu to reach is the wrong place for
               the thing you press when the room gets dark.
 
-              ml-2 rather than the ml-1 that looked right: both controls are
-              44px targets and 4px of dead space between two of them is a
-              mis-tap waiting to happen, on the one pair where the mis-tap
-              repaints the whole site instead of just going somewhere. 8px is
-              still tight against the bar's own gap-4, and it's the smallest
-              step that puts a real edge between them. */}
-          <ThemeToggle className="ml-2" />
+              No margin between the two: 44px boxes edge to edge is what the
+              old note here was arguing for and couldn't have while one of them
+              was a word. The targets meet on a line and never overlap, so the
+              mis-tap that repaints the whole site instead of just going
+              somewhere has nowhere to happen. What separates the marks is 27px
+              of the two boxes' own padding — 14 off the disc, 13 off the
+              rules — rather than a gap anyone set. */}
+          <ThemeToggle />
+
+          <button
+            ref={toggle}
+            type="button"
+            onClick={() => setOpen((wasOpen) => !wasOpen)}
+            aria-expanded={open}
+            aria-controls="site-menu"
+            // The name stays "Menu" in both states. aria-expanded is already
+            // saying open or shut, and a label that also flips to "Close"
+            // makes a screen reader read the state twice, in two vocabularies.
+            aria-label="Menu"
+            // Square, and the same 44 the switch beside it takes, so the two
+            // controls in this corner are a pair rather than a word and a
+            // dial.
+            //
+            // -mr-[13px] is the box's own padding, taken back off the right
+            // edge: 44 less the 18px mark, halved. Without it the bar would
+            // end 13px past where every other row on the page ends, and the
+            // thing aligned to the margin would be an invisible tap target
+            // rather than the rules you can see. Same trick the switch used to
+            // do here with -mr-3.5, and for the same reason — it just isn't
+            // the one on the edge any more.
+            className="-mr-[13px] flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center text-on-surface hover:text-oxley-300"
+          >
+            <MenuMark open={open} />
+          </button>
         </div>
       </div>
 

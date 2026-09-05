@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { getAllWork, getWorkBySlug, getNextWork } from "@/lib/content";
+import {
+  getAllWork,
+  getWorkBySlug,
+  getNextWork,
+  getStudySections,
+} from "@/lib/content";
 import { ProjectView } from "@/app/components/ProjectView";
+import { StudyView } from "@/app/components/StudyView";
 
 // Only slugs from generateStaticParams resolve — fully prerendered, unknown 404s.
 export const dynamicParams = false;
@@ -43,6 +49,20 @@ export default async function WorkPage({
   const Post = item.hasBody
     ? (await import(`@/content/${slug}.mdx`)).default
     : null;
+
+  // Two formats, chosen per project in frontmatter — the showcase for work
+  // whose argument is the artefact, the study for work whose argument is the
+  // reasoning. See the WorkFormat note in lib/content.ts.
+  if (item.format === "study") {
+    return (
+      <StudyView
+        item={item}
+        sections={getStudySections(slug)}
+        next={next}
+        Post={Post}
+      />
+    );
+  }
 
   return <ProjectView item={item} next={next} Post={Post} />;
 }

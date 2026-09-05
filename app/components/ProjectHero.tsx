@@ -1,14 +1,29 @@
 import { ViewTransition } from "react";
 import Image from "next/image";
 import { IMAGE_QUALITY, mediaUrl } from "@/lib/media";
-import { Wordmark } from "./Wordmark";
 import { HeroVideo } from "./HeroVideo";
+import { TopNav } from "./TopNav";
+import type { NavInk } from "./TopNavBar";
 
 /**
- * Full-bleed 2.10:1 hero with the "Jenil HT®" mark overlaid top-left
- * (mix-blend-plus-lighter so it stays legible over any image). A looping
- * `heroVideo` takes over the frame when present (with `hero` as its poster);
- * otherwise the still hero image, falling back to a titled placeholder.
+ * Full-bleed 2.10:1 hero. A looping `heroVideo` takes over the frame when
+ * present (with `hero` as its poster); otherwise the still hero image, falling
+ * back to a titled placeholder.
+ *
+ * The masthead sits on the picture when the project says which ink it should
+ * take, which is what keeps the page opening on the whole frame rather than on
+ * a strip of background above one. Without `ink` the nav is drawn on the
+ * surface above instead, by ProjectView — a cover that can't carry a bar
+ * shouldn't have to.
+ *
+ * It replaced a lone "Jenil HT®" wordmark in this corner, white in
+ * `mix-blend-difference` so it inverted whatever was behind it, and the bar
+ * wore that blend for a while too. It's a good trick with one blind spot this
+ * collection walks straight into: `difference` inverts, so a backdrop near mid
+ * grey comes back as another mid grey, and Stoa's sunset landed the bar at
+ * 2.4:1. No scrim rescues it either — darkening the backdrop drags the
+ * inverted type down with it, so both sides move together. Naming the ink is
+ * the boring answer and the only one that holds on every cover.
  *
  * The ratio follows the covers on home, which are cut to 2.10:1 and are the
  * same file — so the frame the reader tapped is the frame they land in, at the
@@ -21,15 +36,22 @@ export function ProjectHero({
   heroVideo,
   title,
   slug,
+  ink,
 }: {
   hero?: string;
   heroVideo?: string;
   title: string;
   /** Names the shared element the home feed morphs from. */
   slug: string;
+  /** Set to lay the masthead over the frame in that ink. */
+  ink?: NavInk;
 }) {
   return (
-    <header className="relative aspect-[21/10] w-full overflow-hidden bg-oxley-700/10">
+    <header
+      className={`relative aspect-[21/10] w-full overflow-hidden ${
+        ink ? `hero-under-${ink}` : "bg-oxley-700/10"
+      }`}
+    >
       {heroVideo ? (
         <HeroVideo src={heroVideo} poster={hero} alt={title} />
       ) : hero ? (
@@ -56,9 +78,15 @@ export function ProjectHero({
         </div>
       )}
 
-      {/* White text in mix-blend-difference → reads dark over light heroes and
-          light over dark ones, adapting to any image (the mariotestino.com trick). */}
-      <Wordmark className="absolute left-6 top-6 z-10 text-white mix-blend-difference" />
+      {/* The shell's gutters and top offset exactly, so the bar lands in the
+          same place here as on every other page — and, on a study, on the same
+          left edge as the rail below it. Above the picture by DOM order and
+          z-index both. */}
+      {ink && (
+        <div className="absolute inset-x-0 top-0 z-10 px-4 pt-4 sm:px-8">
+          <TopNav ink={ink} />
+        </div>
+      )}
     </header>
   );
 }

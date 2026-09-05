@@ -114,21 +114,20 @@ export default function Home() {
         id="projects"
         title="Projects"
         items={getWorkByCategory("project")}
-        cta="View project"
         eager
       />
 
       {/* The photo sets are their own body of work rather than a footnote to
           the projects, so they get the same frame, the same 2.10:1 crop and a
-          heading at the same size — the only thing that changes is what the
-          link calls itself. A set isn't a project and shouldn't say it is, and
-          "Explore" is the right verb for something you wander rather than
-          read. */}
+          heading at the same size. Nothing distinguishes the two lists now
+          that neither carries a call to action — which is right: the entries
+          name their own discipline on the metadata line, and a set that says
+          Travel next to a project that says Web Design has already told the
+          reader what kind of thing it is. */}
       <WorkSection
         id="photography"
         title="Photography"
         items={getWorkByCategory("photography")}
-        cta="Explore"
       />
     </div>
   );
