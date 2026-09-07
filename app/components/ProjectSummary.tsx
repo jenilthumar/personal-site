@@ -41,6 +41,12 @@ export function ProjectSummary({ item }: { item: WorkItem }) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
+            // The one link on a case study that leaves the site, so it gets the
+            // same tick every other destination gets. No cue on the click:
+            // going somewhere is the site's quietest act, and a sound on the
+            // way out would be the last thing heard from a page the reader is
+            // already leaving.
+            data-cuelume-hover="tick"
             className="group/visit mt-1 inline-flex w-fit items-center gap-1.5 text-base leading-[1.3] font-medium text-oxley-300 underline decoration-oxley-700 underline-offset-4 transition-colors hover:decoration-oxley-300"
           >
             Visit live

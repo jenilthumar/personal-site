@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { play } from "cuelume";
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { SoundToggle } from "./SoundToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   emailLink,
@@ -206,6 +208,7 @@ export function MobileNav({
         <Link
           href="/"
           aria-label="Homepage"
+          data-cuelume-hover="tick"
           onClick={() => setOpen(false)}
           className="flex h-11 items-center font-medium text-on-surface hover:text-oxley-300"
         >
@@ -227,19 +230,41 @@ export function MobileNav({
               Somewhere you have to open a menu to reach is the wrong place for
               the thing you press when the room gets dark.
 
-              No margin between the two: 44px boxes edge to edge is what the
-              old note here was arguing for and couldn't have while one of them
-              was a word. The targets meet on a line and never overlap, so the
-              mis-tap that repaints the whole site instead of just going
-              somewhere has nowhere to happen. What separates the marks is 27px
-              of the two boxes' own padding — 14 off the disc, 13 off the
-              rules — rather than a gap anyone set. */}
+              No margins anywhere in here: 44px boxes edge to edge is what the
+              old note was arguing for and couldn't have while one of them was a
+              word. The targets meet on lines and never overlap, so the mis-tap
+              that repaints the whole site instead of just going somewhere has
+              nowhere to happen. What separates the marks is the boxes' own
+              padding — 14px either side of the disc, 13 off the rules, 14 off
+              the meter — rather than a gap anyone set.
+
+              The mute switch joins the pair on the same terms, and the order is
+              the wide bar's read backwards for the same reason the theme switch
+              sits where it does: distance from the corner is how often you
+              reach for a thing. Menu, then theme, then sound. Three 44px boxes
+              plus the wordmark come to 199px of a 358px row at 390, so the row
+              is nowhere near tight — the argument for the third control is that
+              a site that makes noise has to let you stop it without hunting,
+              and a mute you have to open a menu to find is not one. */}
+          <SoundToggle />
           <ThemeToggle />
 
           <button
             ref={toggle}
             type="button"
-            onClick={() => setOpen((wasOpen) => !wasOpen)}
+            onClick={() =>
+              setOpen((wasOpen) => {
+                // A panel filling in behind the bar and a panel leaving are
+                // opposite gestures, so they get opposite cues rather than one
+                // click both ways: bloom is a warm swell, droplet is a single
+                // note gliding down. Imperative rather than
+                // `data-cuelume-toggle` because one attribute can only name one
+                // sound, and the mark under the finger is the same mark in both
+                // states.
+                play(wasOpen ? "droplet" : "bloom");
+                return !wasOpen;
+              })
+            }
             aria-expanded={open}
             aria-controls="site-menu"
             // The name stays "Menu" in both states. aria-expanded is already
@@ -353,6 +378,8 @@ export function MobileNav({
             </p>
             <a
               href={emailLink?.href}
+              data-cuelume-hover="tick"
+              data-cuelume-toggle="success"
               className="w-fit text-[18px] leading-[1.2] font-medium tracking-[-0.01em] text-oxley-300 min-[380px]:text-[20px]"
             >
               {emailLink?.href.replace("mailto:", "")}

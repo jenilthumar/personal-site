@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { MobileNav } from "./MobileNav";
+import { SoundToggle } from "./SoundToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   ContactMail,
@@ -108,6 +109,7 @@ export function TopNavBar({
             <Link
               href="/"
               aria-label="Homepage"
+              data-cuelume-hover="tick"
               className="font-medium text-on-surface hover:text-oxley-300"
             >
               {site.name}
@@ -170,7 +172,18 @@ export function TopNavBar({
             the first row of type at 16.4px from the top, and a 32px button
             starting at 0 centres at 16. Within half a pixel, so the disc sits
             on the same optical line as the words beside it. */}
-        <ThemeToggle className="ml-12" />
+        {/* Two switches, edge to edge, taking the margin as a pair. Sound
+            first: the theme switch keeps the right edge because it is the one
+            that was there, it is the one reached for more often, and its
+            `lg:-mr-2` pull-out is what puts a mark rather than a tap target on
+            the page's margin. Nothing between them — two 32px boxes meeting on
+            a line, with 16px of their own padding between the marks, which is
+            what makes them read as one control cluster instead of two
+            unrelated dials that happen to be near each other. */}
+        <div className="ml-12 flex items-start">
+          <SoundToggle />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

@@ -96,6 +96,7 @@ export function HomeView({
             type="button"
             onClick={() => writeMode("scroll")}
             aria-pressed={mode === "scroll"}
+            data-cuelume-toggle
             className={toggleClass.scroll}
           >
             Scroll
@@ -104,6 +105,7 @@ export function HomeView({
             type="button"
             onClick={() => writeMode("grid")}
             aria-pressed={mode === "grid"}
+            data-cuelume-toggle
             className={toggleClass.grid}
           >
             Grid

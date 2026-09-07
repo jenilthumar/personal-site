@@ -144,6 +144,10 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={flip}
+      // The one sound in the palette that is literally a switch: a mechanical
+      // click-clack. Declarative rather than a call inside `flip`, so it also
+      // fires when the switch is activated from the keyboard.
+      data-cuelume-toggle
       // The switch says nothing in words, so the name has to carry both the
       // state and what pressing it does.
       aria-label={`${theme === "dark" ? "Dark" : "Light"} theme. Switch to ${next}`}

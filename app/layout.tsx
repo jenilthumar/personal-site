@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { mono } from "./fonts/mono";
 import { InlineScript } from "./components/InlineScript";
+import { SoundCues } from "./components/SoundCues";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -69,10 +70,24 @@ export default function RootLayout({
         <InlineScript
           html={`try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`}
         />
+        {/* Same job for the mute switch. Sounds are on unless stored otherwise,
+            so only "off" is written, and only the drawing depends on it — the
+            audio itself is gated in JS by SoundCues, which runs later. Without
+            this a muted reader would watch the meter drop on hydration. */}
+        <InlineScript
+          html={`try{if(localStorage.getItem("sound")==="off")document.documentElement.dataset.sound="off"}catch(e){}`}
+        />
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
       </head>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        {/* Binds the data-cuelume-* delegation and applies the stored mute. Renders
+            nothing; it is here rather than in the (site) shell because the case
+            study and photography routes sit outside that shell and make sounds
+            too. */}
+        <SoundCues />
+        {children}
+      </body>
     </html>
   );
 }

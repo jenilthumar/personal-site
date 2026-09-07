@@ -57,6 +57,14 @@ export default function ContactPage() {
               </span>
             </>
           );
+          // Every row ticks under the pointer like any other destination. The
+          // address is the exception on the click: it doesn't take you
+          // anywhere, it opens a compose window, which is the one thing on this
+          // site that counts as having done something.
+          const cue = {
+            "data-cuelume-hover": "tick",
+            ...(external ? {} : { "data-cuelume-toggle": "success" }),
+          };
           const cls =
             "group/row flex items-center justify-between gap-6 py-5 text-[18px] leading-[1.2] tracking-[-0.16px] transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0";
           return (
@@ -69,12 +77,13 @@ export default function ContactPage() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  {...cue}
                   className={cls}
                 >
                   {row}
                 </a>
               ) : (
-                <Link href={link.href} className={cls}>
+                <Link href={link.href} {...cue} className={cls}>
                   {row}
                 </Link>
               )}

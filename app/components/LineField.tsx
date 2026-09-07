@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { play } from "cuelume";
 import { buildField, isInked, STEP, type Field } from "@/lib/line-field";
 
 /**
@@ -561,6 +562,22 @@ export function LineField({ className = "" }: { className?: string }) {
     };
     const onDown = (event: PointerEvent) => {
       if (reduce.matches) return;
+      /* The one place on the site that gets `sparkle`, and the only cue here
+         that isn't feedback about anything.
+
+         cuelume reserves it for playful accents and easter eggs, which is what
+         this is: an aria-hidden drawing that answers a click with four seconds
+         of coloured wave and nothing else. `droplet` is the obvious literal
+         choice for a stone in water and it's the wrong one — it means dismiss
+         everywhere else on the site, and a sound that says "closed" over a
+         thing that just opened out costs more than the pun is worth.
+
+         Below full volume because the ripple is a flourish and the palette is
+         tuned for controls. This is the knob if it ever reads as too eager.
+
+         Inside the reduced-motion guard on purpose: with no wave to hear it
+         over, a chime out of a still drawing is a sound with no cause. */
+      play("sparkle", { volume: 0.55 });
       const rect = host.getBoundingClientRect();
       // Oldest goes first, so holding the mouse down doesn't stack ripples
       // until the frame gives out.

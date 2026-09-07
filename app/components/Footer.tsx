@@ -29,6 +29,8 @@ export function Footer() {
           {email && (
             <a
               href={email.href}
+              data-cuelume-hover="tick"
+              data-cuelume-toggle="success"
               className="w-fit text-base tracking-[-0.01em] text-on-surface transition-colors hover:text-oxley-300"
             >
               {email.href.replace("mailto:", "")}
