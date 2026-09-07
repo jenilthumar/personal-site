@@ -64,6 +64,10 @@ export function FilmSpotlight({
               type="button"
               onClick={() => setPlaying(true)}
               aria-label={`Play the film: ${title}`}
+              // `loading` is the rising shimmer that doesn't resolve — the
+              // sound for work the reader has just started. The film takes over
+              // from here, so nothing of ours should be playing over it.
+              data-cuelume-toggle="loading"
               className="group absolute inset-0 h-full w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-oxley-300"
             >
               <span className="absolute inset-0 bg-surface/20 transition-colors duration-300 group-hover:bg-surface/5" />

@@ -108,6 +108,7 @@ export default function AboutPage() {
               the thing that's clickable. */}
           <Link
             href={workHref(trek)}
+            data-cuelume-hover="tick"
             className="group/project flex flex-col gap-6 transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
           >
             <span className="flex items-center justify-between gap-6 text-[18px] leading-[1.2] tracking-[-0.16px]">

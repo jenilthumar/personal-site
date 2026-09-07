@@ -18,6 +18,13 @@ import { BulletMark } from "./PixelMarks";
  * a pale-to-blue gradient against black and needed a different treatment on
  * white. What's left is type, which needs none of that.
  *
+ * Every destination in here carries `data-cuelume-hover="tick"` — the one
+ * place on the site where hovering makes a sound. cuelume's own guidance is to
+ * wire hover on nav and menus and nowhere else, which is also the honest
+ * reading: a tick under the pointer tells you a word is a door. It only fires
+ * on a fine pointer and is throttled to one every 150ms globally, so sweeping
+ * the bar is a few ticks rather than a run of them, and a phone hears nothing.
+ *
  * The two layouts have drifted apart on purpose. The wide bar is a row of
  * columns, so everything in it is one size and the indent under a folder does
  * the nesting. The sheet is a single column with nothing to its right, which
@@ -72,6 +79,7 @@ export function SheetRow({
     <Link
       href={href}
       {...offSite(href)}
+      data-cuelume-hover="tick"
       aria-current={active ? "page" : undefined}
       className={`${row} ${
         active ? "text-oxley-300" : "text-on-surface"
@@ -152,6 +160,7 @@ export function FolderGroup({
             ) : (
               <Link
                 href={item.href}
+                data-cuelume-hover="tick"
                 className="flex items-center gap-1 font-medium text-on-surface hover:text-oxley-300"
               >
                 <BulletMark />
@@ -190,6 +199,7 @@ export function PageLink({
     <Link
       href={href}
       {...offSite(href)}
+      data-cuelume-hover="tick"
       className="w-fit font-medium text-on-surface hover:text-oxley-300"
     >
       {label}
@@ -225,6 +235,12 @@ export function ContactMail() {
   return (
     <a
       href={emailLink.href}
+      data-cuelume-hover="tick"
+      // The one sound on the site that marks an outcome rather than a move.
+      // Everywhere else the address appears it gets the same one, so pressing
+      // it in the bar, in the sheet, in the footer or on the contact page is
+      // the same event with the same confirmation.
+      data-cuelume-toggle="success"
       className="w-fit font-medium text-on-surface hover:text-oxley-300"
     >
       {emailLink.href.replace("mailto:", "")}

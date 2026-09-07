@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type AnimationEvent } from "react";
+import { play } from "cuelume";
 import Image from "next/image";
 import { mediaUrl, PHOTO_QUALITY } from "@/lib/media";
 import type { Photo, PhotoBlock, TextBlock } from "@/lib/content";
@@ -219,31 +220,68 @@ export function PhotoGallery({
   const [active, setActive] = useState<number | null>(null);
   const [closing, setClosing] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
+  /**
+   * Whether a dismissal is already under way, as a ref rather than off
+   * `closing`, purely so the cue can be fired once. Three things can ask to
+   * close — the backdrop, the cross, Escape — and Escape can be leaned on while
+   * the fade is still running; the state flag can't be read from inside the
+   * keydown listener without re-running the effect that locks the page scroll,
+   * which would lose the overflow value it saved on the way in.
+   */
+  const dismissing = useRef(false);
+
+  // Sound goes on the state changes rather than on the buttons, because every
+  // one of these has two ways in: a click and a key. Escape and the backdrop
+  // close, the arrows step, and a reader driving the lightbox from the keyboard
+  // should hear the same thing as one driving it with a mouse.
+  //
+  // bloom to open (a warm swell, the picture arriving), droplet to close (one
+  // note gliding down), page to step — the papery flick, which is exactly what
+  // moving through a set of photographs is.
+  const open = (index: number) => {
+    dismissing.current = false;
+    play("bloom");
+    setActive(index);
+  };
 
   // Closing mirrors the entrance; the backdrop's fade-out is what unmounts the
   // dialog. The figure's own zoom-out bubbles an animationend here too, which
   // is why finishClose checks the name before acting on it.
-  const close = () => setClosing(true);
+  const close = () => {
+    if (dismissing.current) return;
+    dismissing.current = true;
+    play("droplet");
+    setClosing(true);
+  };
   const finishClose = (e: AnimationEvent<HTMLDivElement>) => {
     if (e.animationName !== "fade-out") return;
+    dismissing.current = false;
     setActive(null);
     setClosing(false);
   };
-  const go = (dir: number) =>
+  const go = (dir: number) => {
+    play("page");
     setActive((cur) =>
       cur === null ? cur : (cur + dir + flat.length) % flat.length,
     );
+  };
 
   useEffect(() => {
     if (active === null) return;
     dialogRef.current?.focus();
-    const step = (dir: number) =>
+    const step = (dir: number) => {
+      play("page");
       setActive((cur) =>
         cur === null ? cur : (cur + dir + flat.length) % flat.length,
       );
+    };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setClosing(true);
-      else if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "Escape") {
+        if (dismissing.current) return;
+        dismissing.current = true;
+        play("droplet");
+        setClosing(true);
+      } else if (e.key === "ArrowLeft") step(-1);
       else if (e.key === "ArrowRight") step(1);
     };
     document.addEventListener("keydown", onKey);
@@ -270,7 +308,7 @@ export function PhotoGallery({
               key={i}
               cell={segment.cell}
               title={title}
-              onOpen={setActive}
+              onOpen={open}
             />
           ) : (
             <ol
@@ -284,7 +322,7 @@ export function PhotoGallery({
                   photo={photo}
                   index={index}
                   title={title}
-                  onOpen={setActive}
+                  onOpen={open}
                 />
               ))}
             </ol>

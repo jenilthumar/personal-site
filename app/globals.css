@@ -172,6 +172,20 @@
   color-scheme: light;
 }
 
+/* Whether interaction sounds are on, as a number the mute switch's bars can be
+   scaled by. It rides the document rather than React state for the same reason
+   --toggle-turn does: the inline script in the root layout writes data-sound
+   before first paint, so a muted reader never sees the meter stand up and then
+   drop once hydration catches up. Nothing but SoundToggle reads it — the sound
+   itself is gated in JS, where cuelume's enabled flag lives. */
+:root {
+  --sound-level: 1;
+}
+
+:root[data-sound="off"] {
+  --sound-level: 0;
+}
+
 /* Expose tokens as Tailwind v4 utilities: bg-surface, text-oxley-300,
    text-on-surface, text-body, text-oxley-700, font-sans, font-mono. */
 @theme inline {

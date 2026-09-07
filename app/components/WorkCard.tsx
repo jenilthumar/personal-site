@@ -31,6 +31,7 @@ export function WorkCard({
   return (
     <Link
       href={workHref(item)}
+      data-cuelume-hover="tick"
       className="group block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
     >
       <div

@@ -28,6 +28,7 @@ export function FeedIndex({
     >
       <Link
         href={current.href}
+        data-cuelume-hover="tick"
         className="hidden shrink-0 text-on-surface transition-colors hover:text-oxley-300 sm:inline"
       >
         Project Info +
@@ -40,6 +41,11 @@ export function FeedIndex({
             type="button"
             onClick={() => jumpTo(index)}
             aria-current={index === active ? "true" : undefined}
+            // The index moves the feed from one project to the next, which is
+            // what `page` is for — a papery flick with a glass tick. The hover
+            // tick is the same one every other destination on the site gets.
+            data-cuelume-hover="tick"
+            data-cuelume-toggle="page"
             className={
               index === active
                 ? "min-w-0 truncate text-oxley-300"

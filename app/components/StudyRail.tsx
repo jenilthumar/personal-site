@@ -169,6 +169,7 @@ export function StudyRail({ sections }: { sections: StudySection[] }) {
         <ProgressRing value={progress} />
         <Link
           href="/#projects"
+          data-cuelume-hover="tick"
           className="group/back inline-flex items-center gap-2 text-oxley-700 transition-colors hover:text-on-surface"
         >
           {/* The site's own chevron, turned. It nudges the way the one after
@@ -186,6 +187,8 @@ export function StudyRail({ sections }: { sections: StudySection[] }) {
             <a
               href={`#${section.id}`}
               onClick={(event) => jump(event, section.id)}
+              data-cuelume-hover="tick"
+              data-cuelume-toggle="page"
               aria-current={index === active ? "true" : undefined}
               className={`block transition-colors duration-200 ease-out-quart ${
                 index === active
@@ -236,6 +239,11 @@ export function StudyContents({ sections }: { sections: StudySection[] }) {
           <li key={section.id}>
             <a
               href={`#${section.id}`}
+              // Same pair the rail's rows carry above. The tick is dead weight
+              // on a phone, where this disclosure lives, but the disclosure
+              // shows up on any narrow window with a mouse in it too.
+              data-cuelume-hover="tick"
+              data-cuelume-toggle="page"
               className="block text-base leading-[1.4] text-body"
             >
               {section.label}

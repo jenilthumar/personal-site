@@ -156,6 +156,12 @@ function Entry({
           image that looked clickable and wasn't. */}
       <Link
         href={workHref(item)}
+        // The tick rides the whole anchor, not the title inside it, because
+        // the anchor is the whole row — see the note above. Entering anywhere
+        // over the cover is entering the link, and the global 150ms throttle
+        // means running the pointer down the index is a few ticks rather than
+        // one per row.
+        data-cuelume-hover="tick"
         className="group/project block transition-opacity duration-200 ease-out-quart active:opacity-90 active:duration-0"
       >
         <Cover item={item} eager={eager} />
