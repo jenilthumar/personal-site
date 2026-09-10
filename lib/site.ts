@@ -24,9 +24,9 @@ export const site = {
    */
   statementFlare: "look, feel, and behave",
 
-  /** The opening line on the home page, set large. Third person, unlike the bio. */
+  /** The opening line on the home page, set large. Longer than the bio, same voice. */
   statement:
-    "Jenil Thummar is a product and visual designer living in Surat. He cares about how things look, feel, and behave, and he loves to keep them clean and functional while balancing strong aesthetics.",
+    "Hi, I'm Jenil, a product and visual designer living in Surat. I care about how things look, feel, and behave, and I love to keep them clean and functional while balancing strong aesthetics.",
 
   /** "Currently designing at …" row. */
   current: {
