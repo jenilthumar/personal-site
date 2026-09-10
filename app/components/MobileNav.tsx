@@ -140,6 +140,12 @@ export function MobileNav({
   ink?: NavInk;
 }) {
   const [open, setOpen] = useState(false);
+  // Whether the panel is still on its way out. Separate from `open` because
+  // they answer different questions: `open` is what the reader asked for and
+  // flips at once, so the mark starts unfolding and aria-expanded is honest the
+  // moment they press; `closing` only holds the node in the tree until its fade
+  // has finished. Same arrangement as the lightbox in PhotoGallery.
+  const [closing, setClosing] = useState(false);
   const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
 
@@ -155,8 +161,34 @@ export function MobileNav({
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
-    setOpen(false);
+    if (open) {
+      setOpen(false);
+      setClosing(true);
+    }
   }
+
+  /**
+   * Start the exit. Every way out of the sheet goes through here — the mark in
+   * the bar, Escape, a tap on any link inside, and the path-change backstop —
+   * so the panel always leaves the same way rather than vanishing for some of
+   * them.
+   */
+  const dismiss = () => {
+    if (!open) return;
+    play("droplet");
+    setOpen(false);
+    setClosing(true);
+  };
+
+  /**
+   * `fade-out` is what unmounts the panel. The guard matters: animationend
+   * bubbles, and the sheet's contents carry an entrance animation of their own,
+   * so this fires for their names too.
+   */
+  const finishClose = (event: React.AnimationEvent<HTMLDivElement>) => {
+    if (event.animationName !== "fade-out") return;
+    setClosing(false);
+  };
 
   /**
    * Close whenever a link inside the sheet is activated, wherever it points.
@@ -167,14 +199,16 @@ export function MobileNav({
    * same as a tap.
    */
   const closeOnLink = (event: React.MouseEvent) => {
-    if ((event.target as HTMLElement).closest("a")) setOpen(false);
+    if ((event.target as HTMLElement).closest("a")) dismiss();
   };
 
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      play("droplet");
       setOpen(false);
+      setClosing(true);
       // Send focus back to the control that opened it, not to the top of the
       // document, so a keyboard user keeps their place.
       toggle.current?.focus();
@@ -252,19 +286,25 @@ export function MobileNav({
           <button
             ref={toggle}
             type="button"
-            onClick={() =>
-              setOpen((wasOpen) => {
-                // A panel filling in behind the bar and a panel leaving are
-                // opposite gestures, so they get opposite cues rather than one
-                // click both ways: bloom is a warm swell, droplet is a single
-                // note gliding down. Imperative rather than
-                // `data-cuelume-toggle` because one attribute can only name one
-                // sound, and the mark under the finger is the same mark in both
-                // states.
-                play(wasOpen ? "droplet" : "bloom");
-                return !wasOpen;
-              })
-            }
+            onClick={() => {
+              // A panel filling in behind the bar and a panel leaving are
+              // opposite gestures, so they get opposite cues rather than one
+              // click both ways: bloom is a warm swell, droplet is a single
+              // note gliding down. Imperative rather than `data-cuelume-toggle`
+              // because one attribute can only name one sound, and the mark
+              // under the finger is the same mark in both states.
+              if (open) {
+                play("droplet");
+                setOpen(false);
+                setClosing(true);
+              } else {
+                play("bloom");
+                // Cancels an exit that is still running, for the reader who
+                // presses twice in under 150ms.
+                setClosing(false);
+                setOpen(true);
+              }
+            }}
             aria-expanded={open}
             aria-controls="site-menu"
             // The name stays "Menu" in both states. aria-expanded is already
@@ -289,7 +329,7 @@ export function MobileNav({
         </div>
       </div>
 
-      {open && (
+      {(open || closing) && (
         <div
           id="site-menu"
           // 96px of top padding leaves 36 clear below the bar, which ends at
@@ -314,7 +354,10 @@ export function MobileNav({
           // gesture to the page underneath, which is being held still, so the
           // sheet feels stuck rather than finished.
           onClick={closeOnLink}
-          className="fixed inset-0 z-50 flex animate-fade-in flex-col gap-5 overflow-y-auto overscroll-contain bg-surface px-4 pt-24 pb-5"
+          onAnimationEnd={finishClose}
+          className={`fixed inset-0 z-50 flex flex-col gap-5 overflow-y-auto overscroll-contain bg-surface px-4 pt-24 pb-5 ${
+            closing ? "pointer-events-none animate-fade-out" : "animate-fade-in"
+          }`}
         >
           {/* One size for every destination, and it's 24px rather than the 32
               the sections used to take. 32 was the site's page-title size, and
@@ -327,7 +370,7 @@ export function MobileNav({
               holds if the size ever moves. */}
           <nav
             aria-label="Site"
-            className="flex flex-col gap-6 text-2xl leading-[1.2] tracking-[-0.01em]"
+            className="flex animate-sheet-part-in flex-col gap-6 text-2xl leading-[1.2] tracking-[-0.01em]"
           >
             <FolderGroup
               sheet
@@ -372,7 +415,9 @@ export function MobileNav({
               window. White is the token this design reserves for footer
               navigation, so the address carries the emphasis and the label
               stays muted. */}
-          <div className="mt-auto flex flex-col gap-2 border-t border-oxley-700/25 pt-5">
+          {/* 40ms behind the index above it, so the two read as one column
+              settling rather than two blocks arriving at once. */}
+          <div className="mt-auto flex animate-sheet-part-in flex-col gap-2 border-t border-oxley-700/25 pt-5 [animation-delay:40ms]">
             <p className="font-mono text-base leading-[1.2] text-oxley-700">
               Get in touch
             </p>

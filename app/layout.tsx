@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { mono } from "./fonts/mono";
 import { InlineScript } from "./components/InlineScript";
+import { NavEntrance } from "./components/NavEntrance";
 import { SoundCues } from "./components/SoundCues";
 import "./globals.css";
 
@@ -86,6 +87,10 @@ export default function RootLayout({
             study and photography routes sit outside that shell and make sounds
             too. */}
         <SoundCues />
+        {/* Holds the masthead's entrance to one run per document. Here for the
+            same reason SoundCues is: the root layout is the only thing that
+            survives every navigation on the site. */}
+        <NavEntrance />
         {children}
       </body>
     </html>

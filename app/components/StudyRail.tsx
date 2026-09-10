@@ -234,7 +234,11 @@ export function StudyContents({ sections }: { sections: StudySection[] }) {
           />
         </svg>
       </summary>
-      <ol className="flex flex-col gap-2 pb-5">
+      {/* The rows arrive as the box grows: 240ms of rise-in under the 280ms
+          the height takes, so they are settled just before it stops. This is
+          the disclosure the rise-in keyframe was written for — see the note on
+          it in globals.css. */}
+      <ol className="flex flex-col gap-2 pb-5 group-open:animate-rise-in">
         {sections.map((section) => (
           <li key={section.id}>
             <a
