@@ -7,7 +7,7 @@ import { WorkCard } from "./WorkCard";
  */
 export function NextWork({ item }: { item: WorkItem }) {
   return (
-    <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+    <section className="reveal flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
       <p className="text-[32px] leading-[1.3] text-on-surface">Next Work</p>
       <div className="w-full sm:max-w-[464px]">
         <WorkCard item={item} />
